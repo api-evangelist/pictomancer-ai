@@ -1,0 +1,121 @@
+generated: '2026-09-19'
+method: searched
+source: https://pictomancer.ai/changelog
+docs: https://pictomancer.ai/changelog
+description: >-
+  Structured capture of the dated product changelog (semver, newest first). All twelve entries are
+  additive — new options, formats, headers, delivery modes and SDK releases; no entry announces a breaking
+  change or a removal. The changelog names the SDK version that ships each feature, which is the only
+  place the SDK-to-API mapping is published.
+versioning:
+  scheme: semver (product); API path /v1 unchanged throughout
+  current: 0.12.0
+  current_date: '2026-08-19'
+  detail: lifecycle/pictomancer-ai-lifecycle.yml
+entries:
+- version: 0.12.0
+  date: '2026-08-19'
+  title: C2PA detection
+  additions:
+  - 'analyze reports c2pa_manifest and provenance {c2pa, container}'
+  - 'X-Pictomancer-C2PA-Input header on every processed response'
+  - "presence only \u2014 signature not validated"
+  - 'outputs never carry the manifest'
+- version: 0.11.0
+  date: '2026-08-18'
+  title: Web-ready AI-generated images in one call
+  additions:
+  - 'new optimize_generated_image tool / POST /v1/optimize_generated'
+  - 'metadata stripped by default with transparency kept'
+  - 'max_dimension cap that never upscales'
+  - 'X-Pictomancer-Bytes-Before/-After/-Saved-Percent headers'
+  - 'A2A size-report artifact'
+  sdks: {python: 0.7.0, node: 0.5.0, php: 0.6.0, go: 0.6.0, n8n: 0.6.0}
+- version: 0.10.0
+  date: '2026-08-17'
+  title: Denoise, auto-contrast, sharpen
+  additions:
+  - 'denoise 1-3 median filter'
+  - 'equalize auto-contrast'
+  - 'sharpen unsharp mask'
+  - 'fixed order autorot -> denoise -> equalize -> operation -> sharpen'
+  - 'no surcharge'
+  sdks: {python: 0.6.0, node: 0.4.0, php: 0.5.0, go: 0.5.0, n8n: 0.5.0}
+- version: 0.9.0
+  date: '2026-08-03'
+  title: Smart crop, border trim, auto-rotate
+  additions:
+  - 'gravity attention|entropy|centre on crop'
+  - 'trim with threshold and X-Pictomancer-Trim-* headers'
+  - 'resize fill mode width+height'
+  - 'autorot EXIF orientation'
+  sdks: {python: 0.5.0, node: 0.3.0, php: 0.4.0, go: 0.4.0}
+- version: 0.8.0
+  date: '2026-08-02'
+  title: Perceptual quality target (SSIM)
+  additions:
+  - 'quality_target (0..1] on compress and convert'
+  - 'binary search capped at 7 encodes'
+  - 'X-Pictomancer-Quality-Target/-Achieved/-Q-Final/-Encodes headers'
+  - 'images under the byte budget returned free'
+  pricing: flat +$0.004 when quality_target is used
+- version: 0.7.0
+  date: '2026-07-19'
+  title: AVIF output
+  additions:
+  - 'format avif on every operation'
+  - 'effort 0-9 option'
+  - 'AVIF source decoding'
+  pricing: +$0.001 surcharge on AVIF output
+- version: 0.6.1
+  date: '2026-06-15'
+  title: Callback delivery
+  additions:
+  - 'delivery mode callback_url'
+  - 'X-Pig-Sha256 integrity header'
+  - 'optional HMAC X-Pig-Signature with per-request secret'
+  - 'same SSRF hardening as put_url'
+  - 'descriptive User-Agent on source fetches'
+- version: 0.6.0
+  date: '2026-05-12'
+  title: Delivery targets
+  additions:
+  - 'delivery field inline|put_url on every image endpoint'
+  - 'any S3-compatible storage'
+  - 'zero customer credentials stored'
+  - 'SSRF guard'
+  - 'Prometheus pig_delivery_* metrics'
+- version: 0.5.0
+  date: '2026-04-12'
+  title: Dollar billing, transaction history, GDPR compliance
+  additions:
+  - 'USD balance billing unified with x402 pricing'
+  - 'Stripe Checkout top-ups $1/$5/$20'
+  - 'transaction history'
+  - 'cookie consent + cookie policy'
+  - 'updated Terms and Privacy Policy'
+- version: 0.4.0
+  date: '2026-04-10'
+  title: Rate limiting, Sentry, Python SDK
+  additions:
+  - 'sliding-window rate limiter per identity (API key, wallet, IP)'
+  - 'Sentry'
+  - 'pip install pictomancer'
+  - 'Alembic migrations'
+  - 'Resend email'
+- version: 0.3.0
+  date: '2026-04-05'
+  title: SaaS dashboard and OAuth login
+  additions:
+  - 'dashboard with Google and GitHub OAuth login'
+  - 'API key create/revoke/usage'
+  - 'usage metrics'
+  - 'Grafana dashboards'
+  - 'Python 3.14'
+- version: 0.2.0
+  date: '2026-03-20'
+  title: x402 payments and multi-format support
+  additions:
+  - 'x402 USDC micropayments on Base'
+  - 'image pipeline'
+  - 'TIFF and GIF'

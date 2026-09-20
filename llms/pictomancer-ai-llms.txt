@@ -1,0 +1,87 @@
+# Pictomancer.ai
+
+> Agent-to-agent image processing service
+
+## Endpoints
+
+- MCP: https://api.pictomancer.ai/mcp
+- REST API docs: https://api.pictomancer.ai/docs
+- OpenAPI spec: https://api.pictomancer.ai/openapi.json
+- A2A agent card: https://pictomancer.ai/.well-known/agent.json
+- MCP discovery: https://pictomancer.ai/.well-known/mcp.json
+
+## Available tools
+
+### get_format_info
+Returns supported output formats and their configurable options.
+
+### analyze_image
+Fetch an image from a URL or base64 and return its metadata: size in bytes, pixel dimensions, source format, and what it costs every supported vision model in tokens. Also reports whether the input carries a C2PA (Content Credentials) manifest (c2pa_manifest, provenance.container); presence only, not validated. Always free.
+Input: { "source": "<url or base64>" }
+
+### resize_image
+Scale an image by a factor, or fill an exact box.
+Input: { "source": "<url or base64>", "scale": 0.5 }
+Formats: jpeg, png, webp, tiff, gif, avif
+
+### compress_image
+Re-encode an image with quality/format options to reduce file size.
+Input: { "source": "<url or base64>", "q": 75, "format": "webp" }
+
+### convert_image
+Convert an image to a different format (jpeg, png, webp, tiff, gif, avif).
+Input: { "source": "<url or base64>", "format": "webp" }
+
+### crop_image
+Extract a rectangular region from an image, in one of three mutually exclusive modes.
+Input: { "source": "<url or base64>", "x": 0, "y": 0, "width": 200, "height": 200 }
+
+### optimize_for_vision
+Resize an image to the largest size a given vision model still benefits from, and report what it costs that model in tokens before and after.
+Input: { "source": "<url or base64>", "target_model": "claude" }
+
+### optimize_generated_image
+The step after image generation.
+Input: { "source": "<url or base64>", "format": "webp", "max_dimension": 1600 }
+
+### image_pipeline
+Chain multiple operations (resize, compress, convert, crop) in sequence.
+Input: { "source": "<url or base64>", "operations": [{"type": "resize", "params": {"scale": "0.5"}}, {"type": "convert", "params": {"format": "webp"}}] }
+
+## Delivery (output target)
+
+All image-processing endpoints accept an optional `delivery` field that controls where the result goes.
+
+- `{"mode": "inline"}` (default): result bytes returned in the HTTP response body.
+- `{"mode": "put_url", "put_url": "<https-presigned-url>"}`: result PUT to your own bucket (S3, R2, B2, GCS, Azure, anything S3-compatible). You sign the URL on your side; we never see your cloud credentials. Response is JSON: `{etag, status, bytes_written, duration_ms, content_type}`.
+- Optional `headers` on `put_url`: whitelisted storage headers (Content-Type, Cache-Control, x-amz-acl, x-amz-server-side-encryption, x-ms-blob-content-type, x-goog-meta-*).
+
+Example resize that writes directly to your S3 bucket:
+{ "source": "https://example.com/in.jpg", "scale": 0.5, "format": "webp", "delivery": {"mode": "put_url", "put_url": "https://your-bucket.s3.amazonaws.com/key?X-Amz-Signature=..."} }
+
+### check_usage
+Check remaining free tier requests.
+Returns: identity, requests used, free remaining
+
+### health_check
+Verify the service is operational.
+
+## Pricing
+
+- optimize_generated: $0.002 (same as convert)
+- Free tier: 50 requests per agent identity
+- After free tier: $0.001-$0.03 per request depending on operation and image size
+- Payment: USDC on Base network via x402 protocol (no account needed), or API key subscription plans
+- Subscriptions: Dev EUR15/month (50k images), Pro EUR149/month (1M images), Enterprise custom
+
+## Identity
+
+Agent identity is determined by X-Agent-Wallet header (Ethereum address) or IP fallback.
+
+## How to connect
+
+1. Add to MCP client config:
+   { "mcpServers": { "pictomancer": { "url": "https://api.pictomancer.ai/mcp" } } }
+
+2. Or use REST directly:
+   curl -X POST https://api.pictomancer.ai/v1/resize -H "Content-Type: application/json" -d '{"source": "https://example.com/image.jpg", "scale": 0.5}'

@@ -64,5 +64,5 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Pictomancer.ai is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
+Pictomancer.ai is a Spain-registered image-optimization API for agents — resize, compress, convert, crop and optimize AI-generated images in under 50 ms, published as an OpenAPI 3.1 REST API, a hosted MCP server and an A2A agent card, paid per request with USDC via x402 or an API key (first 50 requests free).
 - https://pictomancer.ai/

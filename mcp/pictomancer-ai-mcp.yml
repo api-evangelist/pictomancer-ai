@@ -1,0 +1,195 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://api.pictomancer.ai/mcp (POST initialize -> notifications/initialized -> tools/list, 2026-09-19)
+docs: https://api.pictomancer.ai/docs
+summary: Pictomancer.ai operates one official remote MCP server at https://api.pictomancer.ai/mcp (Streamable HTTP,
+  MCP protocol revision 2025-06-18, tools capability only, no auth required). It is discoverable from /.well-known/mcp.json
+  on both pictomancer.ai and api.pictomancer.ai, from the A2A agent card's additionalInterfaces, and is listed in
+  the official MCP Registry as ai.pictomancer/image-processing (latest 0.4.0, 2026-08-17). mcp.pictomancer.ai is
+  a 308 alias that redirects to api.pictomancer.ai. Anonymous tools/list succeeded and returned 10 tools with full
+  inputSchema; the verbatim response is saved in mcp/pictomancer-ai-mcp-tools.json.
+deployment:
+  mode: remote
+  endpoint: https://api.pictomancer.ai/mcp
+  auth: none
+  verified: probed
+  note: 'Anonymous initialize returned 200 with a mcp-session-id header and tools/list returned 200 with 10 tools;
+    the server requires the session id on every call after initialize (a bare tools/list is refused with -32600
+    Missing session ID). No stdio package is published: the SDKs (npm @pictomancer/node, PyPI pictomancer, Packagist,
+    Go) are REST clients, not MCP servers. Payment is per-request via x402 (HTTP 402 -> USDC on Base) or an API
+    key; identity is the X-Agent-Wallet header or the caller IP, with 50 free requests per identity.'
+server:
+  name: Pictomancer.ai
+  transport: streamable-http
+  url: https://api.pictomancer.ai/mcp
+  auth: none
+  protocol_version: '2025-06-18'
+  capabilities:
+    tools:
+      listChanged: false
+    resources: false
+    prompts: false
+  discovery:
+    well_known_mcp_json:
+    - https://pictomancer.ai/.well-known/mcp.json
+    - https://api.pictomancer.ai/.well-known/mcp.json
+    mcp_registry:
+      name: ai.pictomancer/image-processing
+      version: 0.4.0
+      url: https://registry.modelcontextprotocol.io/v0/servers?search=pictomancer
+      updated: '2026-08-17'
+      repository: https://gitlab.com/pictomancer.ai/pig-gateway (302 to sign-in; source is private)
+    aliases:
+    - https://mcp.pictomancer.ai/mcp (308 -> api.pictomancer.ai/mcp)
+  rate_limit: 120 requests/minute (X-RateLimit-Limit header; /.well-known/mcp.json rate_limits.requests_per_minute)
+  probe:
+    method: POST initialize + tools/list
+    http_status: 200
+    tool_count: 10
+    fetched: '2026-09-19'
+tools:
+- name: get_format_info
+  description: Get supported formats and options
+  input_schema:
+    required: []
+    properties: {}
+  source_operation: openapi/pictomancer-ai-openapi.yml#get_format_info
+- name: estimate_cost
+  description: Estimate the price of an operation
+  input_schema:
+    required:
+    - operation
+    - input_bytes
+    properties:
+      operation: string
+      input_bytes: integer
+      format: string
+      quality_target: boolean
+      operations: array
+  source_operation: openapi/pictomancer-ai-openapi.yml#estimate_cost
+- name: analyze_image
+  description: Analyze an image
+  input_schema:
+    required:
+    - source
+    properties:
+      source: string
+  source_operation: openapi/pictomancer-ai-openapi.yml#analyze_image
+- name: resize_image
+  description: Resize an image
+  input_schema:
+    required:
+    - source
+    properties:
+      delivery: string
+      source: string
+      scale_x: number
+      scale_y: number
+      scale: number
+      format: string
+      width: integer
+      height: integer
+      gravity: string
+      autorot: boolean
+      denoise: integer
+      equalize: boolean
+      sharpen: boolean
+  source_operation: openapi/pictomancer-ai-openapi.yml#resize_image
+- name: compress_image
+  description: Compress an image
+  input_schema:
+    required:
+    - source
+    properties:
+      delivery: string
+      source: string
+      q: integer
+      format: string
+      strip: boolean
+      quality_target: number
+      autorot: boolean
+      denoise: integer
+      equalize: boolean
+      sharpen: boolean
+  source_operation: openapi/pictomancer-ai-openapi.yml#compress_image
+- name: convert_image
+  description: Convert image format
+  input_schema:
+    required:
+    - source
+    - format
+    properties:
+      delivery: string
+      source: string
+      format: string
+      q: integer
+      strip: boolean
+      lossless: boolean
+      effort: integer
+      quality_target: number
+      autorot: boolean
+      denoise: integer
+      equalize: boolean
+      sharpen: boolean
+  source_operation: openapi/pictomancer-ai-openapi.yml#convert_image
+- name: crop_image
+  description: Crop an image
+  input_schema:
+    required:
+    - source
+    properties:
+      delivery: string
+      source: string
+      x: integer
+      y: integer
+      width: integer
+      height: integer
+      gravity: string
+      trim: boolean
+      threshold: number
+      autorot: boolean
+      denoise: integer
+      equalize: boolean
+      sharpen: boolean
+      format: string
+  source_operation: openapi/pictomancer-ai-openapi.yml#crop_image
+- name: optimize_for_vision
+  description: Resize an image for a vision model
+  input_schema:
+    required:
+    - source
+    - target_model
+    properties:
+      delivery: string
+      source: string
+      target_model: string
+      max_tokens: integer
+      format: string
+      q: integer
+  source_operation: openapi/pictomancer-ai-openapi.yml#optimize_for_vision
+- name: optimize_generated_image
+  description: Optimize an AI-generated image for the web
+  input_schema:
+    required:
+    - source
+    properties:
+      delivery: string
+      source: string
+      format: string
+      q: integer
+      quality_target: number
+      max_dimension: integer
+      strip: boolean
+  source_operation: openapi/pictomancer-ai-openapi.yml#optimize_generated_image
+- name: image_pipeline
+  description: Run a multi-step image pipeline
+  input_schema:
+    required:
+    - source
+    - operations
+    properties:
+      delivery: string
+      source: string
+      operations: array
+  source_operation: openapi/pictomancer-ai-openapi.yml#image_pipeline

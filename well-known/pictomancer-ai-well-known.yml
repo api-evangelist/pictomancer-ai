@@ -1,0 +1,78 @@
+generated: '2026-09-19'
+method: probed
+description: >-
+  Results of probing the closed /.well-known/ list on every host the record knows: the apex
+  pictomancer.ai (www does not resolve), the API/MCP/A2A host api.pictomancer.ai, the dashboard
+  app.pictomancer.ai and the MCP alias mcp.pictomancer.ai. Real documents were served ONLY for the
+  agent card and MCP discovery paths; every RFC 8615 / OAuth / APIs.json path 404s on the apex and
+  API hosts. app.pictomancer.ai is an SPA that answers 200 text/html for EVERY path and is recorded
+  as present-but-not-a-document (nothing saved). mcp.pictomancer.ai answers 308 to api.pictomancer.ai
+  for every path. No security.txt anywhere.
+hosts:
+- host: pictomancer.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/api-catalog.json, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 200, type: application/json, file: pictomancer-ai-agent.json, note: legacy-path A2A agent card, protocolVersion 1.0}
+  - {path: /.well-known/mcp.json, status: 200, type: application/json, file: pictomancer-ai-mcp.json, note: MCP discovery document naming https://api.pictomancer.ai/mcp}
+- host: api.pictomancer.ai
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/api-catalog.json, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - {path: /.well-known/agent-card.json, status: 200, type: application/json, file: pictomancer-ai-api-agent-card.json, note: canonical A2A agent card, protocolVersion 0.3 (primary copy in a2a/)}
+  - {path: /.well-known/agent.json, status: 200, type: application/json, note: legacy path also served on the API host; not saved separately}
+  - {path: /.well-known/mcp.json, status: 200, type: application/json, file: pictomancer-ai-api-mcp.json}
+- host: app.pictomancer.ai
+  note: SPA catch-all — every path below returned 200 text/html (4,469 bytes, the dashboard shell); none is a document and none was saved.
+  documents:
+  - {path: /.well-known/security.txt, status: 200, type: text/html, document: false}
+  - {path: /.well-known/openid-configuration, status: 200, type: text/html, document: false}
+  - {path: /.well-known/oauth-authorization-server, status: 200, type: text/html, document: false}
+  - {path: /.well-known/oauth-protected-resource, status: 200, type: text/html, document: false}
+  - {path: /.well-known/api-catalog, status: 200, type: text/html, document: false}
+  - {path: /.well-known/ai-plugin.json, status: 200, type: text/html, document: false}
+  - {path: /.well-known/ucp.json, status: 200, type: text/html, document: false}
+  - {path: /.well-known/acp.json, status: 200, type: text/html, document: false}
+  - {path: /.well-known/aauth-resource.json, status: 200, type: text/html, document: false}
+  - {path: /.well-known/apis.json, status: 200, type: text/html, document: false}
+  - {path: /apis.json, status: 200, type: text/html, document: false}
+  - {path: /apis.yml, status: 200, type: text/html, document: false}
+  - {path: /.well-known/agent-card.json, status: 200, type: text/html, document: false}
+  - {path: /.well-known/agent.json, status: 200, type: text/html, document: false}
+- host: mcp.pictomancer.ai
+  note: 308 Permanent Redirect to https://api.pictomancer.ai<same path> for every path; the API host rows above are the resolved answers.
+  documents:
+  - {path: /.well-known/security.txt, status: 308}
+  - {path: /.well-known/openid-configuration, status: 308}
+  - {path: /.well-known/oauth-authorization-server, status: 308}
+  - {path: /.well-known/oauth-protected-resource, status: 308}
+  - {path: /.well-known/api-catalog, status: 308}
+  - {path: /.well-known/ai-plugin.json, status: 308}
+  - {path: /.well-known/apis.json, status: 308}
+  - {path: /apis.json, status: 308}
+  - {path: /.well-known/agent-card.json, status: 308}
+  - {path: /.well-known/agent.json, status: 308}
+  - {path: /.well-known/mcp.json, status: 308}

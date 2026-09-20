@@ -1,0 +1,40 @@
+generated: '2026-09-19'
+method: searched
+source: https://pictomancer.ai/llms.txt (Identity, Pricing, How to connect), https://pictomancer.ai/ (Code and For-agents sections), CORS Access-Control-Allow-Headers on api.pictomancer.ai (Authorization, Content-Type, X-Agent-Wallet, X-Payment), https://pictomancer.ai/.well-known/mcp.json (authentication.required false), agent card x402 extension
+docs: https://api.pictomancer.ai/docs
+spec_gap: openapi/pictomancer-ai-openapi.yml declares NO securitySchemes and no security requirement; the credential styles below are documented in prose only (captured for the spec in overlays/pictomancer-ai-openapi-overlay.yaml).
+summary: >-
+  Three ways in, all on the same endpoints. (1) Anonymous — the first 50 requests per identity are free with
+  no account; identity is the X-Agent-Wallet header (an Ethereum address) or, absent that, the caller IP.
+  (2) x402 pay-per-request — after the free tier the API answers 402 with a USDC price on Base; the agent pays
+  and retries with X-Payment. No account or key involved. (3) API key — created in the dashboard
+  (app.pictomancer.ai; login is Google or GitHub OAuth) and sent as Authorization: Bearer; subscription
+  plans (Dev/Pro/Enterprise) and Stripe top-ups bill against it. The MCP server and A2A endpoint accept the
+  same identities; /.well-known/mcp.json states authentication.required: false.
+schemes:
+- name: anonymous
+  type: none
+  identity: X-Agent-Wallet header (Ethereum address) or source IP
+  quota: 50 free requests per identity; analyze and estimate always free
+  applies_to: REST, MCP, A2A
+- name: x402
+  type: payment
+  header: X-Payment
+  protocol: x402 (https://x402.org)
+  currency: USDC
+  network: base
+  flow: request -> 402 with price -> pay -> retry with X-Payment -> 200 (~2s settlement per homepage)
+  cost_guard: 'Optional X-Max-Cost-USD request header: the API returns 412 instead of charging above the cap; POST /v1/estimate prices a request for free first.'
+  applies_to: REST, MCP, A2A
+- name: apiKey
+  type: http
+  scheme: bearer
+  header: Authorization
+  format: 'Authorization: Bearer <PICTOMANCER_API_KEY>'
+  issued_at: https://app.pictomancer.ai (dashboard; create/revoke, usage tracking — changelog v0.3.0)
+  applies_to: REST, MCP, A2A, WordPress plugin (PICTOMANCER_API_KEY in wp-config.php)
+oauth:
+  api: false
+  dashboard_login: Google and GitHub OAuth (changelog v0.3.0) — sign-in only, no API scopes, no authorization-server metadata published
+key_prefix: not published
+rotation: create and revoke keys in the dashboard; no rotation policy published

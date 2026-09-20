@@ -1,0 +1,97 @@
+generated: '2026-09-19'
+method: probed
+source: https://api.pictomancer.ai/.well-known/agent-card.json
+card:
+  file: a2a/pictomancer-ai-agent-card.json
+  legacy_file: a2a/pictomancer-ai-agent-card-legacy.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: api.pictomancer.ai
+  note: >-
+    Pictomancer serves FOUR agent-card documents, all live on 2026-09-19: the canonical
+    /.well-known/agent-card.json on api.pictomancer.ai (protocolVersion 0.3, additionalInterfaces —
+    saved as the primary card), the legacy /.well-known/agent.json on api.pictomancer.ai, and the
+    legacy /.well-known/agent.json on the apex pictomancer.ai (protocolVersion 1.0, interfaces[] +
+    supportedInterfaces[], a pricing block and an x402 extension — saved as
+    pictomancer-ai-agent-card-legacy.json because it carries the payment detail the canonical card
+    omits). The apex 404s the canonical path. The company's own llms.txt and API root document both
+    name https://pictomancer.ai/.well-known/agent.json as the A2A agent card. Ownership is not in
+    question — the card's url is https://api.pictomancer.ai/a2a, the same host that serves the
+    OpenAPI and MCP endpoint, and the apex card's provider.organization is "Pictomancer.ai".
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://api.pictomancer.ai/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  body_bytes: 5996
+  body_parses_as: JSON object with AgentCard shape (name, url, version, protocolVersion, capabilities, skills)
+  corroborating_probes:
+  - url: https://pictomancer.ai/.well-known/agent-card.json
+    http_status: 404
+  - url: https://pictomancer.ai/.well-known/agent.json
+    http_status: 200
+    note: protocolVersion "1.0" card with pricing + x402 extension; 10,522 bytes; application/json.
+  - url: https://api.pictomancer.ai/.well-known/agent.json
+    http_status: 200
+    note: legacy path on the API host; 8,462 bytes; application/json.
+  - url: https://api.pictomancer.ai/a2a
+    http_status: 405
+    note: GET returns 405; a JSON-RPC POST (agent/getAuthenticatedExtendedCard) returned 200 with the card as result — a callable A2A endpoint, not a static page.
+agent_card:
+  name: Pictomancer.ai
+  description: Agent-to-agent image processing service. Resize, convert, compress, and pipeline images via REST, MCP, or A2A.
+  version: 0.1.0
+  url: https://api.pictomancer.ai/a2a
+  protocol_version: '0.3'
+  preferred_transport: JSONRPC
+  additional_interfaces:
+  - {transport: HTTP+JSON, url: https://api.pictomancer.ai}
+  - {transport: MCP, url: https://api.pictomancer.ai/mcp}
+  capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: true}
+  supports_authenticated_extended_card: true
+  default_input_modes: [application/json]
+  default_output_modes: [application/json, image/jpeg, image/png, image/webp]
+  security_schemes: none declared (canonical card omits securitySchemes; apex card declares an empty object — the service is anonymous with x402 pay-per-request)
+  skill_count: 8
+  skills: [analyze_image, resize_image, compress_image, convert_image, crop_image, optimize_for_vision, optimize_generated_image, image_pipeline]
+  apex_card_extras:
+    protocol_version: '1.0'
+    provider: {organization: Pictomancer.ai, url: https://pictomancer.ai}
+    x402_extension: {uri: https://x402.org, chain: base, token: USDC, freeTier: 50, required: false}
+    pricing: pay-per-request in USDC on Base; base prices $0.0 analyze, $0.001 resize/compress/crop/optimize_for_vision, $0.002 convert/optimize_generated; +$0.001 avif; +$0.004 quality_target; size multipliers 1.0x <1MB, 1.5x 1-5MB, 2.0x 5-10MB, 3.0x 10-50MB
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: '0.3'
+  preferred_transport: JSONRPC
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    preferred_transport: true
+    default_input_modes: true
+    default_output_modes: true
+  grade_basis: >-
+    capabilities is an OBJECT (streaming, pushNotifications, extendedAgentCard as fields), protocolVersion
+    is present at the top level ("0.3"), skills is an ARRAY of 8 fully-populated skills (id, name,
+    description, tags, examples, inputModes, outputModes). All three optional discriminators are present.
+  deviations:
+  - field: protocolVersion
+    observed: '"0.3" on the canonical card, "1.0" on the apex legacy card'
+    note: The two published cards disagree on protocol version and shape (0.3-era top-level url/preferredTransport/additionalInterfaces vs 1.0-era interfaces[]/supportedInterfaces[]); a client that reads only one sees a different generation of the spec.
+  - field: supportedInterfaces
+    observed: present alongside additionalInterfaces on the canonical card
+    note: 0.3 and 1.0 interface lists are both carried; harmless, but redundant.
+  - field: securitySchemes
+    observed: absent (canonical) / empty object (apex)
+    note: The pay-per-request x402 flow is described only in the apex card's capabilities.extensions and pricing block, not as a security scheme, so a 0.3-shaped reader cannot see that a 402 challenge is part of the protocol.
+  - field: signatures
+    observed: absent
+    note: No JWS signature block; authenticity rests on TLS to api.pictomancer.ai.
+surface_relationship:
+  note: >-
+    A2A (8 skills), MCP (10 tools, mcp/pictomancer-ai-mcp.yml) and REST (10 operations,
+    openapi/pictomancer-ai-openapi.yml) are three projections of one image-processing core with identical
+    identifiers; A2A omits get_format_info and estimate_cost. See mcp/pictomancer-ai-tool-crosswalk.yml.

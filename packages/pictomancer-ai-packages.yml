@@ -1,0 +1,75 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/pictomancer (org, 6 public repos) + https://pictomancer.ai/ Integrations section; versions and dates read from registry.npmjs.org, pypi.org/pypi/<pkg>/json, repo.packagist.org/p2, proxy.golang.org and api.github.com releases on 2026-09-19
+description: >-
+  First-party client libraries for the Pictomancer.ai REST API, all published under the
+  github.com/pictomancer organization and listed on the company homepage. Every registry release
+  is dated 2026-08-17, the day of the v0.10.0 changelog entry, and the changelog names the SDK
+  versions that carry each feature (v0.11.0: Python 0.7.0, Node 0.5.0, PHP 0.6.0, Go 0.6.0, n8n
+  0.6.0). GitHub "latest release" tags lag the registries (the org cuts registry releases without
+  GitHub releases after July). The WordPress plugin is distributed from GitHub releases only — the
+  wordpress.org directory returns "Plugin not found". No SDK is an MCP server; the MCP surface is
+  the hosted endpoint in mcp/pictomancer-ai-mcp.yml.
+packages:
+- language: python
+  registry: pypi
+  name: pictomancer
+  url: https://pypi.org/project/pictomancer/
+  source: https://github.com/pictomancer/python-sdk
+  install: pip install pictomancer
+  official: true
+  version: 0.7.0
+  published: '2026-08-17'
+  note: Async httpx client, LangChain tools, x402 micropayments (repo description). Seven releases 0.1.0-0.7.0.
+- language: javascript
+  registry: npm
+  name: '@pictomancer/node'
+  url: https://www.npmjs.com/package/@pictomancer/node
+  source: https://github.com/pictomancer/node-sdk
+  install: npm install @pictomancer/node
+  official: true
+  version: 0.5.0
+  published: '2026-08-17'
+- language: php
+  registry: packagist
+  name: pictomancer/pictomancer
+  url: https://packagist.org/packages/pictomancer/pictomancer
+  source: https://github.com/pictomancer/php-sdk
+  install: composer require pictomancer/pictomancer
+  official: true
+  version: 0.6.0
+  published: '2026-08-17'
+- language: go
+  registry: pkg.go.dev
+  name: github.com/pictomancer/go-sdk
+  url: https://pkg.go.dev/github.com/pictomancer/go-sdk
+  source: https://github.com/pictomancer/go-sdk
+  install: go get github.com/pictomancer/go-sdk
+  official: true
+  version: v0.6.0
+  published: '2026-08-17'
+  note: proxy.golang.org @latest resolved v0.6.0 at 2026-08-17T23:30:15Z.
+- language: javascript
+  registry: npm
+  name: n8n-nodes-pictomancer
+  url: https://www.npmjs.com/package/n8n-nodes-pictomancer
+  source: https://github.com/pictomancer/n8n-nodes-pictomancer
+  install: n8n community node — install n8n-nodes-pictomancer from Settings > Community Nodes
+  official: true
+  kind: integration
+  version: 0.6.0
+  published: '2026-08-17'
+- language: php
+  registry: github-releases
+  name: pictomancer/plugin-wordpress
+  url: https://github.com/pictomancer/plugin-wordpress/releases
+  source: https://github.com/pictomancer/plugin-wordpress
+  install: Upload the release ZIP via wp-admin > Plugins > Add New > Upload Plugin; set PICTOMANCER_API_KEY in wp-config.php
+  official: true
+  kind: plugin
+  version: v0.2.0
+  published: '2026-08-02'
+  note: >-
+    Not in the wordpress.org plugin directory (api.wordpress.org plugin_information returns
+    "Plugin not found"; the pictomancer.ai/integrations/wordpress page links only GitHub).
+    Repo last pushed 2026-08-24.

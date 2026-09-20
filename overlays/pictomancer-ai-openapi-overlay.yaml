@@ -1,0 +1,83 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Pictomancer.ai Gateway OpenAPI
+  version: 1.0.0
+  x-generated: '2026-09-19'
+  x-method: generated
+  x-source: >-
+    Applies to openapi/pictomancer-ai-openapi.yml (verbatim copy of https://api.pictomancer.ai/openapi.json,
+    OpenAPI 3.1.0, info.version 0.1.0, 10 operations). The published spec ships no servers[], no tags, no
+    info.description/contact/termsOfService and no securitySchemes; every value below is taken from the
+    provider's own published surfaces (llms.txt, the API root document, the homepage, the agent card,
+    /.well-known/mcp.json and the Terms/Privacy pages) — none is invented.
+extends: ./openapi/pictomancer-ai-openapi.yml
+actions:
+- target: $
+  description: Add the production server named by llms.txt, the API root document, the agent card and every SDK README.
+  update:
+    servers:
+    - url: https://api.pictomancer.ai
+      description: Production (the only published host; mcp.pictomancer.ai is a 308 alias)
+- target: $.info
+  update:
+    description: >-
+      Agent-to-agent image processing service: analyze, resize, compress, convert, crop, optimize-for-vision,
+      optimize AI-generated output, and chain operations in a pipeline. Sub-50 ms processing; pay per request
+      with USDC on Base via x402 (HTTP 402 -> pay -> retry), with an API key, or anonymously for the first 50
+      requests per identity (X-Agent-Wallet or IP). analyze and estimate are always free.
+    termsOfService: https://pictomancer.ai/terms
+    contact:
+      name: Pictomancer.ai
+      url: https://pictomancer.ai
+    x-privacy-policy: https://pictomancer.ai/privacy
+    x-changelog: https://pictomancer.ai/changelog
+    x-status: https://pictomancer.ai/status
+    x-llms-txt: https://pictomancer.ai/llms.txt
+    x-mcp-server: https://api.pictomancer.ai/mcp
+    x-a2a-agent-card: https://api.pictomancer.ai/.well-known/agent-card.json
+- target: $
+  update:
+    tags:
+    - {name: Discovery, description: Formats, options and pricing lookups; always free.}
+    - {name: Inspect, description: Metadata, vision-token cost and C2PA presence; always free.}
+    - {name: Transform, description: Billable single-operation image transforms.}
+    - {name: Pipeline, description: Chain up to 10 transforms; billed as one operation.}
+- target: $.paths['/v1/info'].get
+  update: {tags: [Discovery]}
+- target: $.paths['/v1/estimate'].post
+  update: {tags: [Discovery]}
+- target: $.paths['/v1/analyze'].post
+  update: {tags: [Inspect]}
+- target: $.paths['/v1/resize'].post
+  update: {tags: [Transform]}
+- target: $.paths['/v1/compress'].post
+  update: {tags: [Transform]}
+- target: $.paths['/v1/convert'].post
+  update: {tags: [Transform]}
+- target: $.paths['/v1/crop'].post
+  update: {tags: [Transform]}
+- target: $.paths['/v1/optimize_for_vision'].post
+  update: {tags: [Transform]}
+- target: $.paths['/v1/optimize_generated'].post
+  update: {tags: [Transform]}
+- target: $.paths['/v1/pipeline'].post
+  update: {tags: [Pipeline]}
+- target: $.components
+  description: Document the two credential styles the provider publishes (homepage curl uses Authorization Bearer; llms.txt and the CORS allow-list name X-Agent-Wallet and X-Payment). The spec itself declares none, and anonymous calls are accepted.
+  update:
+    securitySchemes:
+      apiKey:
+        type: http
+        scheme: bearer
+        description: Dashboard-issued API key sent as Authorization Bearer (app.pictomancer.ai). Subscription plans bill against it.
+      agentWallet:
+        type: apiKey
+        in: header
+        name: X-Agent-Wallet
+        description: Ethereum address identifying an agent for the 50-request free tier and x402 pay-per-request; X-Payment carries the x402 payment payload after a 402.
+- target: $
+  update:
+    security:
+    - {}
+    - apiKey: []
+    - agentWallet: []

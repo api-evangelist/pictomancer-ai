@@ -1,0 +1,27 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: >-
+  Harvested from https://pictomancer.ai/privacy and https://pictomancer.ai/terms (both "Last updated:
+  March 28, 2026"), https://pictomancer.ai/cookies, and live probes of the conventional paths
+  /accessibility, /accessibility/vpat, /legal/subprocessors, /legal/dpa, /privacy/requests,
+  /transparency, /trust, /security, /security/sbom, /docs/data-residency, /ai, /ai/transparency,
+  /legal/report-content, /dpa, /subprocessors, /gdpr — every one a real 404 on pictomancer.ai
+  (the apex does not soft-404). No SBOM, VPAT, subprocessor table, DPA, transparency report or
+  residency page is published.
+signals:
+  data_subject_request:
+    url: https://pictomancer.ai/privacy
+    section: Your Rights (GDPR)
+    channel: email (privacy@ and a named DPO address on the page; addresses are Cloudflare-obfuscated in the HTML)
+    rights_listed: [access, rectification, erasure, restriction, portability, objection, withdraw consent]
+    supervisory_authority: AEPD (www.aepd.es) named on the page
+    note: A rights section with a contact channel, not a request form or API.
+context_not_recorded_as_signals:
+  jurisdiction: Company states it is "Registered in Spain" with fiscal headquarters in Spain; Terms governed by Spanish law, EU consumer-protection rights section (14-day withdrawal).
+  retention: 'Privacy Policy retention table: images deleted within 24h of processing; account data while active; usage logs 2 years; marketing data until consent withdrawn.'
+  international_transfers: '"Your data may be processed outside the EU/EEA" under SCCs and adequacy decisions — a transfer statement, not a residency commitment, so data_residency is NOT recorded.'
+  subprocessors: 'Privacy Policy names categories only ("payment processors, cloud infrastructure"); no dated, named subprocessor list, so subprocessors is NOT recorded.'
+  security_statements: 'Prose only ("Encryption in transit and at rest", "Regular security audits", "Incident response procedures"); no notification SLA, so incident_notification is NOT recorded. probe-security-programs.py found no VDP and no trust center.'
+  children: 'Services "not intended for children under 16" — a statement, not an age-assurance mechanism; age_assurance NOT recorded.'
+  cookies: Cookie consent banner and cookie policy page (changelog v0.5.0).

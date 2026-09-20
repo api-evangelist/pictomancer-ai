@@ -1,0 +1,20 @@
+generated: '2026-09-19'
+method: generated
+source: >-
+  Packaged Agent Skills generated from openapi/pictomancer-ai-openapi.yml (10 operations, verified by
+  operationId), the live MCP tools/list (same names), llms.txt and the provider's for-agents page.
+  Cross-cutting rules cite conventions/, errors/, authentication/ and plans/. No provider-published
+  skills or AGENTS.md exist (searched pictomancer.ai, api.pictomancer.ai, github.com/pictomancer).
+skills:
+- file: pictomancer-ai-optimize-generated-image.md
+  name: Ship an AI-generated image web-ready
+  api: openapi/pictomancer-ai-openapi.yml
+  operations: [analyze_image, estimate_cost, optimize_generated_image]
+- file: pictomancer-ai-resize-and-deliver-to-bucket.md
+  name: Resize and deliver straight to your bucket
+  api: openapi/pictomancer-ai-openapi.yml
+  operations: [get_format_info, estimate_cost, resize_image]
+- file: pictomancer-ai-pipeline-with-cost-cap.md
+  name: Run a multi-step pipeline under a cost cap
+  api: openapi/pictomancer-ai-openapi.yml
+  operations: [analyze_image, estimate_cost, image_pipeline]

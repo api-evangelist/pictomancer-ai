@@ -1,0 +1,69 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live probes of api.pictomancer.ai (openapi.json, /mcp initialize + tools/list, /a2a JSON-RPC, /v1/estimate,
+  /metrics, a 422 validation response) and pictomancer.ai (/.well-known/agent.json, /.well-known/mcp.json,
+  llms.txt, changelog), plus the OpenAPI schemas in openapi/pictomancer-ai-openapi.yml. No prose compliance
+  claim is recorded as a conformance.
+standards:
+- id: mcp
+  conforms: true
+  version: '2025-06-18'
+  evidence: >-
+    POST https://api.pictomancer.ai/mcp initialize returned protocolVersion 2025-06-18 with a tools capability; tools/list returned 10 tools with JSON Schema inputSchema (mcp/pictomancer-ai-mcp-tools.json). Streamable HTTP with mcp-session-id. Listed in registry.modelcontextprotocol.io as ai.pictomancer/image-processing.
+- id: a2a
+  conforms: true
+  version: '0.3 (canonical card) / 1.0 (apex card)'
+  evidence: >-
+    https://api.pictomancer.ai/.well-known/agent-card.json parses as an AgentCard with capabilities object, protocolVersion and 8 skills (graded conformant in a2a/pictomancer-ai-a2a.yml); POST https://api.pictomancer.ai/a2a answers JSON-RPC.
+- id: x402
+  conforms: true
+  evidence: >-
+    Agent card capabilities.extensions[0].uri https://x402.org (chain base, token USDC, freeTier 50); POST /v1/estimate returned {"currency":"USDC","network":"base","within_free_tier":true}; homepage documents 402 -> pay -> 200 and llms.txt names "USDC on Base network via x402 protocol". The 402 challenge itself was not triggered (doing so would spend the provider's compute).
+- id: c2pa
+  conforms: true
+  scope: detection-only
+  evidence: >-
+    The contract declares Content Credentials vocabulary — components.schemas.ProvenanceInfo {c2pa: boolean, container: jpeg-app11 | png-caBX | webp-C2PA | isobmff-uuid} on AnalyzeResponse, and the X-Pictomancer-C2PA-Input response header (changelog v0.12.0). The provider states manifests are detected but NOT validated and never carried over to outputs; this is not a C2PA signing implementation.
+- id: openapi
+  conforms: true
+  version: 3.1.0
+  evidence: >-
+    https://api.pictomancer.ai/openapi.json is OpenAPI 3.1.0 with 10 paths and 19 schemas; Swagger UI at /docs.
+- id: rfc8615-well-known
+  conforms: true
+  evidence: >-
+    /.well-known/agent-card.json, /.well-known/agent.json and /.well-known/mcp.json are served as application/json on api.pictomancer.ai; no security.txt, openid-configuration or oauth metadata (well-known/pictomancer-ai-well-known.yml).
+- id: prometheus-exposition
+  conforms: true
+  evidence: >-
+    GET https://api.pictomancer.ai/metrics returned 200, 77 KB, Content-Type "text/plain; version=1.0.0; charset=utf-8" (pig_delivery_* counters named in changelog v0.6.0). Public, unauthenticated.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No securitySchemes in the OpenAPI, no /.well-known/oauth-authorization-server or oauth-protected-resource on any host; Google/GitHub OAuth exists only for dashboard login (changelog v0.3.0), not for API calls.
+- id: oidc
+  conforms: false
+  evidence: >-
+    /.well-known/openid-configuration 404 on pictomancer.ai and api.pictomancer.ai.
+- id: rfc9457
+  conforms: false
+  evidence: >-
+    Errors use the FastAPI/Pydantic envelope {"detail":[{type, loc, msg, input}]} with application/json (observed live 422), not application/problem+json.
+- id: idempotency
+  conforms: false
+  evidence: >-
+    No Idempotency-Key or equivalent header in the OpenAPI or docs; operations are stateless transforms and each billable POST is charged again on replay (conventions/pictomancer-ai-conventions.yml).
+- id: pagination
+  conforms: false
+  applicable: false
+  evidence: >-
+    No list endpoints; every operation takes one image and returns one result.
+- id: rfc8594-sunset
+  conforms: false
+  evidence: >-
+    No Deprecation/Sunset headers documented; no deprecation policy published (lifecycle/pictomancer-ai-lifecycle.yml).
+- id: gdpr
+  conforms: null
+  evidence: >-
+    Privacy Policy states the company is registered in Spain, complies with GDPR, lists retention periods and data-subject rights; recorded in regulatory/pictomancer-ai-regulatory-posture.yml, not asserted as a conformance because no audit, certification or DPA is published.

@@ -1,0 +1,88 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Pictomancer.ai
+providerId: pictomancer-ai
+created: '2026-09-19'
+modified: '2026-09-19'
+generated: '2026-09-19'
+method: searched
+source: https://pictomancer.ai/#pricing
+sources:
+- https://pictomancer.ai/#pricing
+- https://pictomancer.ai/llms.txt
+- https://pictomancer.ai/.well-known/agent.json (pricing block)
+- https://pictomancer.ai/for-agents/ai-generated-images
+plan_count: 5
+tags: [Images, Image Optimization, Agents, x402]
+description: >-
+  Two pricing modes published side by side — monthly subscriptions in EUR for steady workloads, and
+  pay-per-request in USD (settled in USDC on Base via x402, or from a Stripe-topped-up USD balance) with no
+  plan. Per-request price = base price x size multiplier + surcharges; a pipeline is billed as one operation;
+  analyze and estimate are always free; a compress/optimize that does not shrink the file is free.
+plans:
+- id: free
+  name: Free
+  type: free
+  price: 0
+  currency: USD
+  billing: none
+  description: 50 requests per agent identity to try everything. No card, no account. Every operation, full API access, analyze always free.
+  entries:
+  - {label: Requests, name: requests, type: quota, metric: request, limit: 50, timeFrame: lifetime-per-identity}
+- id: dev
+  name: Dev
+  type: subscription
+  price: 15
+  currency: EUR
+  billing: month
+  description: 50,000 images per month for products in development and small sites. API keys, usage dashboard, email support.
+  entries:
+  - {label: Images, name: images, type: quota, metric: image, limit: 50000, timeFrame: month}
+  overage: not published
+- id: pro
+  name: Pro
+  type: subscription
+  price: 149
+  currency: EUR
+  billing: month
+  description: 1,000,000 images per month for production workloads. Everything in Dev, priority processing, priority support.
+  entries:
+  - {label: Images, name: images, type: quota, metric: image, limit: 1000000, timeFrame: month}
+  overage: not published
+- id: enterprise
+  name: Enterprise
+  type: contact
+  price: custom
+  currency: null
+  billing: custom
+  description: More than 10M images, SLAs, custom delivery targets, volume pricing, direct line to the team.
+- id: pay-per-request
+  name: Pay-per-request
+  type: usage-based
+  currency: USD
+  billing: per request
+  description: 'No plan, no commitment: $0.001-$0.03 per image, billed as base price x size multiplier. Agents pay per request with USDC on Base via x402 — no account involved; humans can top up a USD balance via Stripe ($1/$5/$20).'
+  entries:
+  - {label: analyze, name: analyze, type: metered, metric: request, price: 0.000, unit: USD}
+  - {label: resize, name: resize, type: metered, metric: request, price: 0.001, unit: USD}
+  - {label: compress, name: compress, type: metered, metric: request, price: 0.001, unit: USD}
+  - {label: crop, name: crop, type: metered, metric: request, price: 0.001, unit: USD}
+  - {label: optimize_for_vision, name: optimize_for_vision, type: metered, metric: request, price: 0.001, unit: USD}
+  - {label: convert, name: convert, type: metered, metric: request, price: 0.002, unit: USD}
+  - {label: optimize_generated, name: optimize_generated, type: metered, metric: request, price: 0.002, unit: USD}
+  - {label: pipeline, name: pipeline, type: metered, metric: request, price: 'sum of steps, billed as one operation', unit: USD}
+  surcharges:
+  - {name: avif output, price: 0.001, unit: USD}
+  - {name: quality_target (SSIM search), price: 0.004, unit: USD}
+  size_multipliers:
+  - {range: under 1 MB, multiplier: 1.0}
+  - {range: 1-5 MB, multiplier: 1.5}
+  - {range: 5-10 MB, multiplier: 2.0}
+  - {range: 10-50 MB, multiplier: 3.0}
+  examples:
+  - {request: resize 500KB, price: 0.001}
+  - {request: convert 3MB, price: 0.003}
+  - {request: compress to SSIM >= 0.95 500KB, price: 0.005}
+  - {request: pipeline 3 ops 7MB, price: 0.008}
+  - {request: 'homepage receipt: pipeline resize x0.625 -> convert webp q=80 on a 2.9 MB JPEG', price: 0.0045, note: $0.003 base x 1.5 size multiplier}

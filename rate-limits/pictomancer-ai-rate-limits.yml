@@ -1,0 +1,39 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Pictomancer.ai
+providerId: pictomancer-ai
+created: '2026-09-19'
+modified: '2026-09-19'
+generated: '2026-09-19'
+method: probed
+source: live response headers on https://api.pictomancer.ai (GET /, POST /v1/resize, POST /mcp) 2026-09-19; https://pictomancer.ai/.well-known/mcp.json rate_limits; https://pictomancer.ai/changelog v0.4.0
+sources:
+- https://api.pictomancer.ai/
+- https://pictomancer.ai/.well-known/mcp.json
+- https://pictomancer.ai/changelog
+limit_count: 1
+tags: [Rate Limiting, Images]
+description: >-
+  One published ceiling — 120 requests per minute per identity (API key, wallet or IP), enforced by a
+  sliding-window limiter (changelog v0.4.0) and advertised as rate_limits.requests_per_minute in the MCP
+  discovery document. The API returns X-RateLimit-Limit and X-RateLimit-Remaining on every response,
+  including the MCP transport. The exhaustion status code and Retry-After are not documented and were not
+  provoked. Plan tiers cap monthly volume (50k / 1M images) rather than rate.
+headers:
+  limit: X-RateLimit-Limit
+  remaining: X-RateLimit-Remaining
+  reset: not observed
+  retryAfter: not documented
+responseCodes:
+  throttled: null
+  note: exhaustion status not documented and not observed; 429 is the conventional expectation but is not asserted here
+limits:
+- name: Requests per minute (per identity)
+  scope: identity (API key, X-Agent-Wallet, or IP)
+  metric: requests_per_minute
+  limit: 120
+  timeFrame: minute
+  window: sliding
+  observed: 'X-RateLimit-Limit: 120, X-RateLimit-Remaining: 117-119 across probes'
+  applies_to: [REST, MCP, A2A]

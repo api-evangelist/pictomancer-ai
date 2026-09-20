@@ -1,0 +1,140 @@
+generated: '2026-09-19'
+method: derived
+source: Derived by binding the live MCP tools/list (mcp/pictomancer-ai-mcp-tools.json, 10 tools, anonymous) to the
+  OpenAPI 3.1.0 served at https://api.pictomancer.ai/openapi.json (openapi/pictomancer-ai-openapi.yml, 10 operations).
+  Tool names and operationIds are identical strings in the provider's own contract, and every tool property name
+  appears in the matching request schema.
+purpose: Bind each MCP tool to the REST operation that backs it so an agent can move between the MCP, REST and A2A
+  projections of one image-processing core; the A2A agent card exposes 8 of the same 10 as skills (no get_format_info,
+  no estimate_cost).
+surfaces:
+  rest_openapi: openapi/pictomancer-ai-openapi.yml (source openapi/_original/pictomancer-ai-openapi.json; 10 operations,
+    19 schemas; no servers[] in the published spec — base https://api.pictomancer.ai per llms.txt and the API root
+    document)
+  mcp: https://api.pictomancer.ai/mcp (open; anonymous tools/list returns inputSchema)
+  a2a: https://api.pictomancer.ai/a2a (JSONRPC; card at https://api.pictomancer.ai/.well-known/agent-card.json)
+  graphql: null
+crosswalk:
+- tool: get_format_info
+  category: discovery
+  rest:
+  - get_format_info
+  http: GET /v1/info
+  binding: rest
+  confidence: high
+  a2a_skill: null
+- tool: estimate_cost
+  category: pricing
+  rest:
+  - estimate_cost
+  http: POST /v1/estimate
+  binding: rest
+  confidence: high
+  a2a_skill: null
+- tool: analyze_image
+  category: inspect
+  rest:
+  - analyze_image
+  http: POST /v1/analyze
+  binding: rest
+  confidence: high
+  a2a_skill: analyze_image
+- tool: resize_image
+  category: transform
+  rest:
+  - resize_image
+  http: POST /v1/resize
+  binding: rest
+  confidence: high
+  a2a_skill: resize_image
+- tool: compress_image
+  category: transform
+  rest:
+  - compress_image
+  http: POST /v1/compress
+  binding: rest
+  confidence: high
+  a2a_skill: compress_image
+- tool: convert_image
+  category: transform
+  rest:
+  - convert_image
+  http: POST /v1/convert
+  binding: rest
+  confidence: high
+  a2a_skill: convert_image
+- tool: crop_image
+  category: transform
+  rest:
+  - crop_image
+  http: POST /v1/crop
+  binding: rest
+  confidence: high
+  a2a_skill: crop_image
+- tool: optimize_for_vision
+  category: transform
+  rest:
+  - optimize_for_vision
+  http: POST /v1/optimize_for_vision
+  binding: rest
+  confidence: high
+  a2a_skill: optimize_for_vision
+- tool: optimize_generated_image
+  category: transform
+  rest:
+  - optimize_generated_image
+  http: POST /v1/optimize_generated
+  binding: rest
+  confidence: high
+  a2a_skill: optimize_generated_image
+- tool: image_pipeline
+  category: composite
+  rest:
+  - image_pipeline
+  http: POST /v1/pipeline
+  binding: rest
+  confidence: high
+  a2a_skill: image_pipeline
+mcp_only: []
+rest_only: []
+a2a_skills:
+- skill: analyze_image
+  mcp_tool: analyze_image
+  rest:
+  - analyze_image
+- skill: resize_image
+  mcp_tool: resize_image
+  rest:
+  - resize_image
+- skill: compress_image
+  mcp_tool: compress_image
+  rest:
+  - compress_image
+- skill: convert_image
+  mcp_tool: convert_image
+  rest:
+  - convert_image
+- skill: crop_image
+  mcp_tool: crop_image
+  rest:
+  - crop_image
+- skill: optimize_for_vision
+  mcp_tool: optimize_for_vision
+  rest:
+  - optimize_for_vision
+- skill: optimize_generated_image
+  mcp_tool: optimize_generated_image
+  rest:
+  - optimize_generated_image
+- skill: image_pipeline
+  mcp_tool: image_pipeline
+  rest:
+  - image_pipeline
+coverage:
+  mcp_tools: 10
+  rest_operations: 10
+  bound: 10
+  mcp_only: 0
+  rest_only: 0
+  a2a_skills: 8
+  a2a_skills_bound: 8

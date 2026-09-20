@@ -1,0 +1,53 @@
+generated: '2026-09-19'
+method: derived
+format: fastapi-detail
+source: >-
+  Derived from openapi/pictomancer-ai-openapi.yml (every POST declares 422 -> HTTPValidationError; no other
+  error response is declared), one live observation (POST /v1/resize with {} returned 422 with the envelope
+  below), and the provider's own operation descriptions, llms.txt, homepage and changelog for the 402, 412
+  and rate-limit behaviours. Statuses marked documented were not triggered live.
+envelope:
+  media_type: application/json
+  shape: '{ "detail": [ { "type": string, "loc": [string|int...], "msg": string, "input": any, "ctx"?: object } ] }'
+  observed: '{"detail":[{"type":"missing","loc":["body","source"],"msg":"Field required","input":{}}]}'
+  note: Pydantic v2 validation errors; non-validation errors are not schema-declared in the spec.
+problems:
+- status: 422
+  title: Validation Error
+  meaning: Request body failed schema validation (missing source, mutually exclusive resize/crop modes, out-of-range q/effort/denoise, more than 10 pipeline operations, non-https delivery URL).
+  declared_in_spec: true
+  observed: true
+  remediation: Read detail[].loc and detail[].msg; fix the named field. The spec's request schemas (ResizeRequest, CropRequest, PipelineRequest, PutUrlDelivery, CallbackDelivery) carry the constraints.
+- status: 402
+  title: Payment Required (x402)
+  meaning: Free tier (50 requests per identity) exhausted and no valid payment or API key presented; the response carries an x402 price for the operation.
+  declared_in_spec: false
+  documented: 'homepage "402 -> pay -> 200"; llms.txt Pricing; agent card x402 extension'
+  remediation: Pay the quoted USDC amount on Base per x402 and retry with X-Payment, or send a dashboard API key as Authorization Bearer. Call POST /v1/estimate first to know the price.
+- status: 412
+  title: Precondition Failed (cost cap)
+  meaning: The request carried an X-Max-Cost-USD header and the computed price exceeded it; the API refused instead of charging more than allowed.
+  declared_in_spec: false
+  documented: 'operation description of POST /v1/estimate (estimate_cost)'
+  remediation: Raise the cap or reduce the input (smaller image, no avif, no quality_target).
+- status: 429
+  title: Too Many Requests
+  meaning: Sliding-window rate limit per identity (API key, wallet, IP) exceeded; the published ceiling is 120 requests per minute (X-RateLimit-Limit).
+  declared_in_spec: false
+  documented: 'changelog v0.4.0 "Sliding window rate limiter per identity"; /.well-known/mcp.json rate_limits.requests_per_minute 120'
+  status_code_confirmed: false
+  remediation: Back off until X-RateLimit-Remaining recovers; the exhaustion status was not observed and Retry-After is not documented.
+- status: 405
+  title: Method Not Allowed
+  meaning: GET on the A2A JSON-RPC endpoint.
+  declared_in_spec: false
+  observed: true
+  remediation: POST JSON-RPC to https://api.pictomancer.ai/a2a.
+- status: 400
+  title: Bad Request (MCP)
+  meaning: JSON-RPC to /mcp without the mcp-session-id issued by initialize.
+  declared_in_spec: false
+  observed: '{"jsonrpc":"2.0","id":"server-error","error":{"code":-32600,"message":"Bad Request: Missing session ID"}}'
+  remediation: Call initialize, read the mcp-session-id response header, send it on every subsequent request.
+free_outcomes:
+  note: Several non-error outcomes matter to a paying agent — a compress/optimize whose output is not smaller is returned with X-Pig-Billed 0 and does not consume free-tier quota; an image already within a vision budget is returned untouched and free.

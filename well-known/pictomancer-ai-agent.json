@@ -1,0 +1,322 @@
+{
+  "protocolVersion": "1.0",
+  "name": "Pictomancer.ai",
+  "description": "Agent-to-agent image processing service. Resize, convert, compress, and pipeline images via REST, MCP, or A2A.",
+  "version": "0.1.0",
+  "url": "https://api.pictomancer.ai/a2a",
+  "preferredTransport": "JSONRPC",
+  "interfaces": [
+    {
+      "url": "https://api.pictomancer.ai/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://api.pictomancer.ai",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://api.pictomancer.ai/mcp",
+      "protocolBinding": "MCP",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "supportedInterfaces": [
+    {
+      "url": "https://api.pictomancer.ai/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://api.pictomancer.ai",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://api.pictomancer.ai/mcp",
+      "protocolBinding": "MCP",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "provider": {
+    "organization": "Pictomancer.ai",
+    "url": "https://pictomancer.ai"
+  },
+  "securitySchemes": {},
+  "security": [],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extendedAgentCard": true,
+    "extensions": [
+      {
+        "uri": "https://x402.org",
+        "description": "Pay-per-request in USDC on Base L2. First 50 requests free per agent.",
+        "required": false,
+        "params": {
+          "chain": "base",
+          "token": "USDC",
+          "freeTier": 50
+        }
+      }
+    ]
+  },
+  "defaultInputModes": [
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ],
+  "skills": [
+    {
+      "id": "analyze_image",
+      "name": "Analyze image",
+      "description": "Fetch an image and return metadata (file size in bytes). Accepts a public URL or base64-encoded image.",
+      "tags": [
+        "image",
+        "metadata",
+        "analyze",
+        "size"
+      ],
+      "examples": [
+        "How big is this image? https://example.com/photo.jpg",
+        "Get the file size of this PNG"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ]
+    },
+    {
+      "id": "resize_image",
+      "name": "Resize image",
+      "description": "Scale an image by a factor, or fill an exact box. Supports uniform scaling (scale) or independent axes (scale_x, scale_y). Or set width+height for fill mode: resize and smart-crop to those exact dimensions in one call (optional gravity: attention, entropy, centre). Optional enhancement modifiers: denoise (median, radius 1-3), equalize (auto-contrast), sharpen. Output formats: jpeg, png, webp, tiff, gif, avif.",
+      "tags": [
+        "image",
+        "resize",
+        "scale",
+        "dimensions",
+        "smart-crop",
+        "fill"
+      ],
+      "examples": [
+        "Resize this image to half size: https://example.com/photo.jpg",
+        "Scale this image by 0.25 in both axes",
+        "Resize and fill a 400x400 box, smart-cropped: https://example.com/photo.jpg"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ]
+    },
+    {
+      "id": "compress_image",
+      "name": "Compress image",
+      "description": "Re-encode an image with q (1-100) and format options to reduce file size. Supports q (quality), strip, compression. Formats: jpeg, png, webp, tiff, gif, avif. Or set quality_target (0-1] instead of q: the worker searches for the smallest file with SSIM at or above the target (jpeg, webp, avif) and reports the achieved SSIM, final q and encode count. Optional enhancement modifiers: denoise (median, radius 1-3), equalize (auto-contrast), sharpen.",
+      "tags": [
+        "image",
+        "compress",
+        "optimize",
+        "quality",
+        "file-size",
+        "ssim",
+        "sharpen",
+        "denoise",
+        "equalize",
+        "enhance"
+      ],
+      "examples": [
+        "Compress this JPEG to q=60: https://example.com/photo.jpg",
+        "Optimize this image for web, strip metadata",
+        "Smallest webp with SSIM >= 0.95: https://example.com/photo.jpg",
+        "Denoise and sharpen this scan, then compress it"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ]
+    },
+    {
+      "id": "convert_image",
+      "name": "Convert image format",
+      "description": "Convert an image to a different format. Supports: jpeg, png, webp, tiff, gif, avif. Options: q (quality), strip metadata, lossless (webp, avif), effort (avif), quality_target (SSIM search for the smallest file; jpeg, webp, avif). Optional enhancement modifiers: denoise (median, radius 1-3), equalize (auto-contrast), sharpen.",
+      "tags": [
+        "image",
+        "convert",
+        "format",
+        "webp",
+        "avif",
+        "png",
+        "jpeg"
+      ],
+      "examples": [
+        "Convert this PNG to WebP: https://example.com/image.png",
+        "Convert to AVIF with q=50: https://example.com/photo.jpg",
+        "Convert to JPEG with q=85, strip EXIF"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/tiff",
+        "image/gif",
+        "image/avif"
+      ]
+    },
+    {
+      "id": "crop_image",
+      "name": "Crop image",
+      "description": "Extract a rectangular region from an image, in one of three modes. Manual: top-left corner (x, y) and dimensions (width, height) in pixels. Smart crop: gravity (attention, entropy, centre) plus width and height; the window is picked automatically. Trim: trim=true (optional threshold) removes a uniform background border via content detection. Optional enhancement modifiers: denoise (median, radius 1-3), equalize (auto-contrast), sharpen. Output formats: jpeg, png, webp, tiff, gif, avif.",
+      "tags": [
+        "image",
+        "crop",
+        "cut",
+        "region",
+        "trim",
+        "smart-crop",
+        "gravity"
+      ],
+      "examples": [
+        "Crop a 200x200 square at (10, 10): https://example.com/photo.jpg",
+        "Smart-crop this to 512x512, focused on the subject: https://example.com/photo.jpg",
+        "Trim the white border off this scanned page: https://example.com/photo.jpg"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ]
+    },
+    {
+      "id": "optimize_for_vision",
+      "name": "Optimize image for a vision model",
+      "description": "Resize an image to the largest size a given vision model still benefits from, and report what it costs that model in tokens before and after. Every provider downscales oversized input before counting, so this saves bytes and upload latency rather than tokens; pass max_tokens to trade resolution for tokens. Supported models: claude-opus-5, claude-opus-4-8, claude-opus-4-7, claude-sonnet-5, claude-opus-4-6, claude-sonnet-4-6, claude-opus-4-5, claude-sonnet-4-5, claude-haiku-4-5, gpt-4o, gpt-4.1, gpt-4o-mini, o1, o3, gemini-2.5-pro, gemini-2.5-flash.",
+      "tags": [
+        "image",
+        "vision",
+        "tokens",
+        "llm",
+        "resize",
+        "cost"
+      ],
+      "examples": [
+        "Prepare this screenshot for claude-opus-5: https://example.com/shot.png",
+        "Resize this photo for gpt-4o",
+        "Get this under 1500 tokens for claude-opus-5"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ]
+    },
+    {
+      "id": "optimize_generated_image",
+      "name": "Optimize an AI-generated image for the web",
+      "description": "The step after image generation: turn the 2-8 MB PNG that gpt-image, DALL-E, Flux, Midjourney or Stable Diffusion returned into a web-ready webp (default), avif, jpeg or png. Metadata stripped, transparency kept, optional max_dimension cap (never upscales), optional q or quality_target (SSIM). Same price as convert; if the result is not smaller it is free. Reports bytes before and after.",
+      "tags": [
+        "image",
+        "generated",
+        "ai-generated",
+        "gpt-image",
+        "dall-e",
+        "flux",
+        "midjourney",
+        "stable-diffusion",
+        "webp",
+        "avif",
+        "optimize",
+        "web"
+      ],
+      "examples": [
+        "Optimize this gpt-image output for my website: https://example.com/gen.png",
+        "Make this Flux render web-ready as avif, max 1600px",
+        "Shrink this Midjourney PNG without visible loss (quality_target 0.95)"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/webp",
+        "image/avif",
+        "image/jpeg",
+        "image/png"
+      ]
+    },
+    {
+      "id": "image_pipeline",
+      "name": "Image processing pipeline",
+      "description": "Chain multiple image operations in sequence (max 10). Operations: resize, compress, convert, crop. Each step receives the output of the previous one.",
+      "tags": [
+        "image",
+        "pipeline",
+        "batch",
+        "chain",
+        "multi-step"
+      ],
+      "examples": [
+        "Resize to 50% then convert to WebP: https://example.com/photo.jpg",
+        "Crop, resize, and compress this image in one call"
+      ],
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ]
+    }
+  ],
+  "pricing": {
+    "model": "pay-per-request",
+    "currency": "USDC",
+    "network": "base",
+    "free_tier": "50 requests per agent",
+    "base_prices": {
+      "analyze": "$0.0",
+      "resize": "$0.001",
+      "compress": "$0.001",
+      "convert": "$0.002",
+      "crop": "$0.001",
+      "optimize_for_vision": "$0.001",
+      "optimize_generated": "$0.002"
+    },
+    "format_surcharges": {
+      "avif": "$0.001"
+    },
+    "feature_surcharges": {
+      "quality_target": "$0.004"
+    },
+    "size_multipliers": {
+      "under_1MB": "1.0x",
+      "1MB_5MB": "1.5x",
+      "5MB_10MB": "2.0x",
+      "10MB_50MB": "3.0x"
+    },
+    "payment_protocol": "x402"
+  }
+}

@@ -1,0 +1,32 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  components.schemas.CallbackDelivery in openapi/pictomancer-ai-openapi.yml (verbatim field descriptions)
+  and changelog v0.6.1 "Callback delivery — POST results to your endpoint" at https://pictomancer.ai/changelog.
+  Pictomancer publishes no AsyncAPI document and no event catalog; this is the one outbound HTTP surface it
+  documents.
+kind: result-callback
+description: >-
+  Every image-processing endpoint accepts delivery {mode: callback_url}. Instead of returning the bytes
+  inline, the API POSTs the optimized image to the caller's HTTPS endpoint — a per-request result callback
+  rather than a subscription webhook. There are no event types, no subscription management and no retries
+  documented.
+endpoint_requirements:
+  scheme: https only
+  ssrf: DNS resolved once and pinned; internal IP ranges blocked; whitelisted headers only
+  authentication: '"secure the endpoint with a token in the URL itself" (schema description); no credentials stored provider-side'
+delivery:
+  method: POST
+  body: the optimized image bytes (raw, not JSON)
+  headers:
+  - {name: X-Pig-Sha256, meaning: SHA-256 of the POSTed body for integrity verification, always sent}
+  - {name: X-Pig-Signature, meaning: HMAC signature of the body (GitHub-webhook style) sent only when a per-request `secret` is supplied; the secret is never stored}
+  - {name: caller-supplied headers, meaning: optional Content-Type, Cache-Control, x-amz-* etc. from delivery.headers, whitelisted at the SSRF layer}
+request_shape:
+  delivery:
+    mode: callback_url
+    callback_url: https://your.endpoint/path?token=...
+    headers: {Content-Type: image/webp}
+    secret: <optional HMAC secret>
+events: []
+asyncapi_document: none published

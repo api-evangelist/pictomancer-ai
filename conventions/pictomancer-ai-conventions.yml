@@ -1,0 +1,116 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  openapi/pictomancer-ai-openapi.yml (operation descriptions, Delivery oneOf, HTTPValidationError),
+  https://pictomancer.ai/llms.txt, https://pictomancer.ai/ (Operations, Delivery, Pricing, For agents),
+  https://pictomancer.ai/changelog (v0.4.0 rate limiter, v0.6.0/v0.6.1 delivery, v0.8.0 quality headers,
+  v0.9.0 trim headers, v0.11.0 byte-saving headers, v0.12.0 C2PA header), https://pictomancer.ai/terms
+  (fees non-refundable), and live response headers observed on api.pictomancer.ai on 2026-09-19.
+description: >-
+  Cross-cutting runtime semantics of the Pictomancer.ai image API. It is a stateless transform service:
+  every operation is one POST that takes an image (URL or base64) and returns bytes (or JSON for analyze,
+  estimate and info). There are no resources, no ids, no lists — so pagination, expansion and resource
+  versioning do not exist, and the runtime signals that matter are billing, delivery and rate limits.
+base_url: https://api.pictomancer.ai
+api_style: REST over HTTPS; JSON requests; binary image responses (image/*) or JSON
+authentication:
+  style: anonymous free tier (X-Agent-Wallet or IP identity) -> x402 pay-per-request (402 -> X-Payment) or Authorization Bearer API key
+  detail: authentication/pictomancer-ai-authentication.yml
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  notes: >-
+    No Idempotency-Key or request-token header is documented in the spec, llms.txt or docs. Operations are
+    pure transforms with no server-side state, so a replay returns an equivalent result — but every billable
+    replay is charged again (base price x size multiplier) and spends a free-tier slot, and fees are
+    non-refundable (Terms). Agents should keep their own request ledger.
+dry_run:
+  supported: true
+  mechanism: 'POST /v1/estimate (operationId estimate_cost) returns the exact list price for an operation and input size without fetching or processing; X-Max-Cost-USD on the real request makes the API refuse with 412 rather than exceed the cap.'
+  free: true
+reversibility:
+  status: na
+  write_surface: none
+  notes: >-
+    The API creates no persistent resources to cancel, restore or roll back — inputs are deleted within 24h
+    (Privacy Policy) and outputs are returned to the caller or written to the caller's own storage. The one
+    irreversible effect is the charge: Terms state "All fees are non-refundable except as required by law",
+    so the reversal path for money is EU consumer withdrawal rights only. No reversal operation exists in the
+    contract; recorded as na rather than none because there is nothing to reverse.
+pagination:
+  style: none
+  notes: No collection endpoints.
+field_expansion: none
+metadata: none
+request_tracing:
+  request_id_header: not documented
+  notes: No request-id or trace header is published; the mcp-session-id header exists only on the MCP transport.
+versioning:
+  scheme: URL path (/v1)
+  detail: lifecycle/pictomancer-ai-lifecycle.yml
+error_envelope:
+  media_type: application/json
+  shape: '{"detail":[{"type","loc","msg","input"}]}'
+  detail: errors/pictomancer-ai-problem-types.yml
+rate_limit_signaling:
+  headers_observed: [X-RateLimit-Limit, X-RateLimit-Remaining]
+  observed_values: 'X-RateLimit-Limit: 120 on GET / and POST /v1/resize (2026-09-19)'
+  scope: per identity (API key, wallet, IP), sliding window
+  exhaustion_status: not observed; Retry-After not documented
+  detail: rate-limits/pictomancer-ai-rate-limits.yml
+billing_signaling:
+  request_headers: [X-Max-Cost-USD, X-Agent-Wallet, X-Payment]
+  response_headers:
+  - header: X-Pig-Billed
+    meaning: >-
+      amount billed for the request; 0 when a compress/optimize did not shrink the file or the image was already within budget
+  - header: X-Pictomancer-Bytes-Before
+    meaning: >-
+      input size in bytes (optimize_generated)
+  - header: X-Pictomancer-Bytes-After
+    meaning: >-
+      output size in bytes
+  - header: X-Pictomancer-Bytes-Saved-Percent
+    meaning: >-
+      saving achieved
+  - header: X-Pictomancer-Quality-Target
+    meaning: >-
+      requested SSIM target
+  - header: X-Pictomancer-Quality-Achieved
+    meaning: >-
+      SSIM achieved
+  - header: X-Pictomancer-Quality-Q-Final
+    meaning: >-
+      encoder quality chosen by the search
+  - header: X-Pictomancer-Quality-Encodes
+    meaning: >-
+      number of encodes tried (max 7)
+  - header: X-Pictomancer-Trim-*
+    meaning: >-
+      rectangle removed by crop trim
+  - header: X-Pictomancer-C2PA-Input
+    meaning: >-
+      whether the input carried a C2PA manifest
+  pricing_model: base price per operation x size multiplier (1.0x <1MB, 1.5x 1-5MB, 2.0x 5-10MB, 3.0x 10-50MB) + surcharges (avif +$0.001, quality_target +$0.004); pipeline billed as one operation
+  detail: plans/pictomancer-ai-plans-pricing.yml
+delivery:
+  field: delivery (oneOf, discriminator mode)
+  modes:
+  - mode: inline
+    meaning: >-
+      bytes in the response body (default)
+  - mode: put_url
+    meaning: >-
+      caller-signed presigned HTTPS PUT to the caller's own bucket (S3, R2, GCS, Azure, B2, DO Spaces); credentials never reach the provider; response is JSON {etag, status, bytes_written, duration_ms, content_type}
+  - mode: callback_url
+    meaning: >-
+      provider POSTs the bytes to the caller's HTTPS endpoint with X-Pig-Sha256 and optional HMAC X-Pig-Signature; see asyncapi/pictomancer-ai-webhooks.yml
+  ssrf_policy: HTTPS-only, DNS resolved once and pinned, internal IP ranges blocked, whitelisted storage headers only
+enhancement_modifiers:
+  order: autorot -> denoise -> equalize -> operation -> sharpen
+  fields: [autorot, denoise (1-3), equalize, sharpen]
+  price: base price, no surcharge
+input:
+  source: public https URL or base64 (optionally a data URI)
+  max_operations_per_pipeline: 10

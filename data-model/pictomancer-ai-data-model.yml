@@ -1,0 +1,97 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived from the 19 component schemas and their $ref links in openapi/pictomancer-ai-openapi.yml. The
+  API is stateless — there are no persisted entities, ids or id-prefixes — so this is a request/response
+  shape graph rather than an entity-relationship model.
+docs: https://api.pictomancer.ai/docs
+notation: request schemas compose the shared Delivery oneOf; PipelineRequest contains PipelineOperation[]; AnalyzeResponse contains ProvenanceInfo.
+entities:
+- name: ImageSource
+  kind: request
+  description: >-
+    {source: https URL | base64 | data URI}; body of analyze_image.
+- name: ResizeRequest
+  kind: request
+  description: >-
+    source + scale | scale_x/scale_y | width+height (fill, gravity) + format/q + modifiers + delivery.
+- name: CompressRequest
+  kind: request
+  description: >-
+    source + q | quality_target + format/strip/autorot/denoise + delivery.
+- name: ConvertRequest
+  kind: request
+  description: >-
+    source + format + q/strip/lossless/effort/quality_target + delivery.
+- name: CropRequest
+  kind: request
+  description: >-
+    source + (x,y,width,height) | (gravity,width,height) | trim(threshold) + delivery.
+- name: OptimizeForVisionRequest
+  kind: request
+  description: >-
+    source + target_model + max_tokens + format/q + delivery.
+- name: OptimizeGeneratedRequest
+  kind: request
+  description: >-
+    source + format + q | quality_target + max_dimension + strip + delivery.
+- name: PipelineRequest
+  kind: request
+  description: >-
+    source + operations[] (max 10) + delivery.
+- name: PipelineOperation
+  kind: value
+  description: >-
+    {type: resize|compress|convert|crop, params: map<string,string>}.
+- name: EstimateRequest
+  kind: request
+  description: >-
+    operation + input_bytes + format + quality_target + operations (for pipeline).
+- name: EstimateOperation
+  kind: value
+  description: >-
+    one priced step inside a pipeline estimate.
+- name: EstimateResponse
+  kind: response
+  description: >-
+    price_usd, base_usd, surcharges_usd{}, size_multiplier, pipeline_discount, within_free_tier, free_tier_remaining, currency, network.
+- name: AnalyzeResponse
+  kind: response
+  description: >-
+    size_bytes, width, height, format, vision_tokens{model->tokens}, c2pa_manifest, provenance.
+- name: ProvenanceInfo
+  kind: value
+  description: >-
+    {c2pa: bool, container: jpeg-app11|png-caBX|webp-C2PA|isobmff-uuid|null}.
+- name: InlineDelivery
+  kind: value
+  description: >-
+    {mode: inline} — default.
+- name: PutUrlDelivery
+  kind: value
+  description: >-
+    {mode: put_url, put_url: https presigned PUT, headers?}.
+- name: CallbackDelivery
+  kind: value
+  description: >-
+    {mode: callback_url, callback_url: https, headers?, secret? (HMAC)}.
+- name: HTTPValidationError
+  kind: error
+  description: >-
+    {detail: ValidationError[]}.
+- name: ValidationError
+  kind: error
+  description: >-
+    {loc[], msg, type, input, ctx}.
+relationships:
+- {from: ResizeRequest, to: Delivery, kind: has_one, via: delivery, note: oneOf InlineDelivery|PutUrlDelivery|CallbackDelivery by mode}
+- {from: CompressRequest, to: Delivery, kind: has_one, via: delivery}
+- {from: ConvertRequest, to: Delivery, kind: has_one, via: delivery}
+- {from: CropRequest, to: Delivery, kind: has_one, via: delivery}
+- {from: OptimizeForVisionRequest, to: Delivery, kind: has_one, via: delivery}
+- {from: OptimizeGeneratedRequest, to: Delivery, kind: has_one, via: delivery}
+- {from: PipelineRequest, to: Delivery, kind: has_one, via: delivery}
+- {from: PipelineRequest, to: PipelineOperation, kind: has_many, via: operations}
+- {from: EstimateRequest, to: EstimateOperation, kind: has_many, via: operations}
+- {from: AnalyzeResponse, to: ProvenanceInfo, kind: has_one, via: provenance}
+- {from: HTTPValidationError, to: ValidationError, kind: has_many, via: detail}

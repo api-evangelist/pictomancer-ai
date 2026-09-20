@@ -1,18 +1,122 @@
 aid: pictomancer-ai
 name: Pictomancer.ai
-description: 'Pictomancer.ai is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Pictomancer.ai is a Spain-registered image-optimization API built for agents: resize, compress, convert,
+  crop, optimize-for-vision and one-call optimization of AI-generated images, processed in under 50 ms and priced
+  per request ($0.001-$0.03, analyze free). The same ten operations are published three ways — an OpenAPI 3.1 REST
+  API, a hosted MCP server (Streamable HTTP, listed in the official MCP Registry) and an A2A agent card — and are
+  paid for anonymously with USDC on Base via x402 (HTTP 402 -> pay -> retry), with an API key, or free for the first
+  50 requests per identity. Results return inline, PUT to the caller''s own bucket, or POST to a callback endpoint.
+  First-party SDKs ship for Python, Node, PHP and Go plus an n8n node and a WordPress plugin.'
 url: https://raw.githubusercontent.com/api-evangelist/pictomancer-ai/refs/heads/main/apis.yml
+image: https://pictomancer.ai/apple-icon.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass local-v3 2026-09-19 (was stub/harvest)
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
 - Company
-apis: []
+- Images
+- Image Optimization
+- Image Processing
+- Media
+- Agents
+- MCP
+- A2A
+- x402
+- Micropayments
+- Developer Tools
+apis:
+- aid: pictomancer-ai:pictomancer-ai-image-api
+  name: Pictomancer.ai Image API
+  description: 'REST API for image transformation: get_format_info, estimate_cost, analyze_image, resize_image,
+    compress_image, convert_image, crop_image, optimize_for_vision, optimize_generated_image and image_pipeline
+    (chain up to 10 steps, billed as one). JSON in, image bytes out (or JSON for analyze/estimate/info, or a delivery
+    receipt when writing to your bucket). OpenAPI 3.1.0 served at https://api.pictomancer.ai/openapi.json with Swagger
+    UI at /docs. Free tier of 50 requests per identity, then x402 USDC micropayments or an API key.'
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Images
+  - Image Optimization
+  - Image Processing
+  - Compression
+  - Format Conversion
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-openapi.yml
+  - type: OpenAPI
+    name: Provider-hosted OpenAPI 3.1.0 (verbatim source in openapi/_original/)
+    url: https://api.pictomancer.ai/openapi.json
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Overlay
+    url: overlays/pictomancer-ai-openapi-overlay.yaml
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: AgentSkill
+    url: skills/pictomancer-ai-optimize-generated-image.md
+  - type: AgentSkill
+    url: skills/pictomancer-ai-resize-and-deliver-to-bucket.md
+  - type: AgentSkill
+    url: skills/pictomancer-ai-pipeline-with-cost-cap.md
+- aid: pictomancer-ai:pictomancer-ai-mcp-server
+  name: Pictomancer.ai MCP Server
+  description: Official hosted Model Context Protocol server at https://api.pictomancer.ai/mcp (Streamable HTTP,
+    protocol revision 2025-06-18, no authentication required, 120 requests/minute). Anonymous tools/list returns
+    ten tools with full JSON Schema inputSchema, one per REST operation. Discoverable via /.well-known/mcp.json
+    on pictomancer.ai and api.pictomancer.ai and listed in the official MCP Registry as ai.pictomancer/image-processing;
+    mcp.pictomancer.ai is a 308 alias.
+  humanURL: https://pictomancer.ai/llms.txt
+  baseURL: https://api.pictomancer.ai/mcp
+  tags:
+  - MCP
+  - Agents
+  - Images
+  properties:
+  - type: MCPServer
+    url: mcp/pictomancer-ai-mcp.yml
+  - type: MCPServer
+    url: https://api.pictomancer.ai/mcp
+  - type: ToolCrosswalk
+    url: mcp/pictomancer-ai-tool-crosswalk.yml
+  - type: Documentation
+    url: https://pictomancer.ai/llms.txt
+- aid: pictomancer-ai:pictomancer-ai-a2a-agent
+  name: Pictomancer.ai A2A Agent
+  description: 'Agent-to-Agent endpoint at https://api.pictomancer.ai/a2a (JSON-RPC) described by a published agent
+    card — canonical /.well-known/agent-card.json on api.pictomancer.ai (protocolVersion 0.3, graded conformant)
+    and a legacy /.well-known/agent.json on the apex (protocolVersion 1.0, with an x402 pricing extension). Eight
+    skills mirror the REST operations: analyze, resize, compress, convert, crop, optimize_for_vision, optimize_generated_image
+    and image_pipeline.'
+  humanURL: https://api.pictomancer.ai/.well-known/agent-card.json
+  baseURL: https://api.pictomancer.ai/a2a
+  tags:
+  - A2A
+  - Agents
+  - Images
+  properties:
+  - type: AgentCard
+    url: a2a/pictomancer-ai-a2a.yml
+  - type: AgentCard
+    name: Canonical agent card (provider-hosted)
+    url: https://api.pictomancer.ai/.well-known/agent-card.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +125,54 @@ maintainers:
 common:
 - type: Website
   url: https://pictomancer.ai/
+- type: Documentation
+  url: https://api.pictomancer.ai/docs
+- type: APIReference
+  url: https://api.pictomancer.ai/docs
+- type: DeveloperPortal
+  url: https://app.pictomancer.ai/
+- type: Login
+  url: https://app.pictomancer.ai/
+- type: SignUp
+  url: https://app.pictomancer.ai/
+- type: Pricing
+  url: https://pictomancer.ai/#pricing
+- type: Plans
+  url: plans/pictomancer-ai-plans-pricing.yml
+- type: ChangeLog
+  url: https://pictomancer.ai/changelog
+- type: ChangeLog
+  url: changelog/pictomancer-ai-changelog.yml
+- type: StatusPage
+  url: https://pictomancer.ai/status
+- type: Lifecycle
+  url: lifecycle/pictomancer-ai-lifecycle.yml
+- type: TermsOfService
+  url: https://pictomancer.ai/terms
+- type: PrivacyPolicy
+  url: https://pictomancer.ai/privacy
+- type: GitHubOrganization
+  url: https://github.com/pictomancer
+- type: LLMsTxt
+  url: https://pictomancer.ai/llms.txt
+- type: LLMsTxt
+  url: llms/pictomancer-ai-llms.txt
+- type: Packages
+  url: packages/pictomancer-ai-packages.yml
+- type: SDKs
+  url: packages/pictomancer-ai-packages.yml
+- type: WellKnown
+  url: well-known/pictomancer-ai-well-known.yml
+- type: Conformance
+  url: conformance/pictomancer-ai-conformance.yml
+- type: DomainSecurity
+  url: security/pictomancer-ai-domain-security.yml
+- type: RegulatoryPosture
+  url: regulatory/pictomancer-ai-regulatory-posture.yml
+- type: DataSubjectRequest
+  url: https://pictomancer.ai/privacy
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 27
+  pass: local-v3
