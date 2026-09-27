@@ -1,0 +1,146 @@
+openapi: 3.2.0
+info:
+  title: Pictomancer Ai Analyze API
+  version: 0.1.0
+  description: 'Operations tagged Analyze across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Analyze
+paths:
+  /v1/analyze:
+    post:
+      summary: Analyze an image
+      description: 'Fetch an image from a URL or base64 and return its metadata: size in bytes, pixel dimensions, source format, and what it costs every supported vision model in tokens. Always free. Dimensions are omitted if the image header cannot be read. Also reports whether the input carries a C2PA (Content Credentials) manifest and in which container; the manifest is not validated.'
+      operationId: analyze_image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageSource'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Analyze
+components:
+  schemas:
+    ProvenanceInfo:
+      properties:
+        c2pa:
+          type: boolean
+          title: C2Pa
+          description: True when the input embeds a C2PA (Content Credentials) manifest. Presence only; the signature is not validated.
+        container:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Container
+          description: 'Where the manifest was found: jpeg-app11, png-caBX, webp-C2PA, isobmff-uuid, or null.'
+      type: object
+      required:
+      - c2pa
+      title: ProvenanceInfo
+    ImageSource:
+      properties:
+        source:
+          type: string
+          title: Source
+          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
+      type: object
+      required:
+      - source
+      title: ImageSource
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    AnalyzeResponse:
+      properties:
+        size_bytes:
+          type: integer
+          title: Size Bytes
+          description: File size of the fetched image in bytes.
+        width:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Width
+          description: Image width in pixels, if it could be read.
+        height:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height
+          description: Image height in pixels, if it could be read.
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: Detected source format, e.g. jpeg, png, webp, avif.
+        vision_tokens:
+          anyOf:
+          - additionalProperties:
+              type: integer
+            type: object
+          - type: 'null'
+          title: Vision Tokens
+          description: What this image costs each supported vision model, in tokens. Providers downscale oversized input before counting, so these are the prices actually charged, not a naive pixel estimate.
+        c2pa_manifest:
+          type: boolean
+          title: C2Pa Manifest
+          description: True when the input embeds a C2PA (Content Credentials) manifest. Presence only; the signature is not validated.
+          default: false
+        provenance:
+          anyOf:
+          - $ref: '#/components/schemas/ProvenanceInfo'
+          - type: 'null'
+          description: 'C2PA detection detail: {c2pa: bool, container: ''jpeg-app11'' | ''png-caBX'' | ''webp-C2PA'' | ''isobmff-uuid'' | null}.'
+      type: object
+      required:
+      - size_bytes
+      title: AnalyzeResponse
+x-refined-from:
+- pictomancer-ai-openapi.json
+- pictomancer-ai-openapi.yml

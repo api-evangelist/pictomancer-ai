@@ -1,0 +1,244 @@
+openapi: 3.2.0
+info:
+  title: Pictomancer Ai Resize API
+  version: 0.1.0
+  description: 'Operations tagged Resize across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Resize
+paths:
+  /v1/resize:
+    post:
+      summary: Resize an image
+      description: 'Scale an image by a factor, or fill an exact box. Use ''scale'' for uniform scaling, or ''scale_x''/''scale_y'' for independent axes (float factors, e.g. 0.5 = half size). Alternatively set ''width''+''height'' for fill mode: resize and smart-crop to those exact dimensions in one call (optional ''gravity'', default attention). The two modes are mutually exclusive. Optional enhancement modifiers: denoise (1-3), equalize, sharpen (applied denoise -> equalize -> op -> sharpen).'
+      operationId: resize_image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResizeRequest'
+        required: true
+      responses:
+        '200':
+          description: Processed image binary
+          content:
+            application/json:
+              schema: {}
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Resize
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ResizeRequest:
+      properties:
+        delivery:
+          oneOf:
+          - $ref: '#/components/schemas/InlineDelivery'
+          - $ref: '#/components/schemas/PutUrlDelivery'
+          - $ref: '#/components/schemas/CallbackDelivery'
+          title: Delivery
+          discriminator:
+            propertyName: mode
+            mapping:
+              callback_url: '#/components/schemas/CallbackDelivery'
+              inline: '#/components/schemas/InlineDelivery'
+              put_url: '#/components/schemas/PutUrlDelivery'
+        source:
+          type: string
+          title: Source
+          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
+        scale_x:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Scale X
+          description: Horizontal scale factor (e.g. 0.5 = half width). If only scale_x is given, scale_y defaults to the same value.
+        scale_y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Scale Y
+          description: Vertical scale factor (e.g. 0.75 = 75% height). Optional; defaults to scale_x if omitted.
+        scale:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Scale
+          description: Uniform scale factor applied to both axes (e.g. 0.5 = half size). Use this for simple scaling; use scale_x/scale_y for independent axes.
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: 'Output format: jpeg, png, webp, tiff, gif, or avif. If omitted, the original format is preserved.'
+        width:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Width
+          description: 'Target width in pixels for fill mode: resize and smart-crop to these exact dimensions in one call. Requires height. Mutually exclusive with scale/scale_x/scale_y. Upscaling is allowed.'
+        height:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height
+          description: Target height in pixels for fill mode. Requires width.
+        gravity:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gravity
+          description: 'Fill-mode smart-crop strategy: one of (''attention'', ''entropy'', ''centre''). Only valid together with width and height; defaults to attention.'
+        autorot:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Autorot
+          description: Apply EXIF orientation before resizing. Opt-in; default false, which preserves current byte-for-byte behavior.
+        denoise:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Denoise
+          description: 'Median denoise before resizing: radius 1-3 (window 3x3 to 7x7). Opt-in; no surcharge.'
+        equalize:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Equalize
+          description: Auto-contrast (histogram equalisation of the value channel; hue and saturation preserved) before resizing. Opt-in.
+        sharpen:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Sharpen
+          description: Unsharp-mask sharpen after resizing (libvips defaults). Opt-in.
+      additionalProperties: true
+      type: object
+      required:
+      - source
+      title: ResizeRequest
+    InlineDelivery:
+      properties:
+        mode:
+          type: string
+          const: inline
+          title: Mode
+          default: inline
+      additionalProperties: false
+      type: object
+      title: InlineDelivery
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PutUrlDelivery:
+      properties:
+        mode:
+          type: string
+          const: put_url
+          title: Mode
+        put_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Put Url
+          description: Customer-signed presigned PUT URL where the optimized bytes will be written. Must be https://. Cloud credentials never reach our infrastructure; only the URL itself is used and discarded after the request.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional storage headers to include on the PUT call (Content-Type, Cache-Control, x-amz-acl, etc.). Whitelisted at SSRF layer.
+      additionalProperties: false
+      type: object
+      required:
+      - mode
+      - put_url
+      title: PutUrlDelivery
+    CallbackDelivery:
+      properties:
+        mode:
+          type: string
+          const: callback_url
+          title: Mode
+        callback_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Callback Url
+          description: Customer endpoint where the optimized bytes will be POSTed. Must be https://. For async/large jobs. We send an X-Pig-Sha256 header of the body so the receiver can verify integrity. No credentials are stored on our side; secure the endpoint with a token in the URL itself.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional headers to include on the POST call (Content-Type, Cache-Control, x-amz-*, etc.). Whitelisted at SSRF layer.
+        secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secret
+          description: 'Optional HMAC secret. When set, we sign the POST body with HMAC-SHA256 and send ''X-Pig-Signature: sha256=<hex>''. Used per request and never stored. Recompute the HMAC on your endpoint to authenticate the callback (constant-time compare).'
+      additionalProperties: false
+      type: object
+      required:
+      - mode
+      - callback_url
+      title: CallbackDelivery
+x-refined-from:
+- pictomancer-ai-openapi.json
+- pictomancer-ai-openapi.yml

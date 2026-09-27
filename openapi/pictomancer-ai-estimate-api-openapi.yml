@@ -1,0 +1,184 @@
+openapi: 3.2.0
+info:
+  title: Pictomancer Ai Estimate API
+  version: 0.1.0
+  description: 'Operations tagged Estimate across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Estimate
+paths:
+  /v1/estimate:
+    post:
+      summary: Estimate the price of an operation
+      description: 'Returns the exact USD price this API would charge for an operation on an input of the given size, without fetching or processing anything. Free. Use it before paying: send X-Max-Cost-USD on the real request to have the API refuse (412) instead of charging more than you allowed. The list price is returned even when the request could end up free (free tier, or a compress that does not shrink the file).'
+      operationId: estimate_cost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EstimateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Estimate
+components:
+  schemas:
+    EstimateRequest:
+      properties:
+        operation:
+          type: string
+          title: Operation
+          description: Operation to price. One of resize, compress, convert, crop, optimize_for_vision, optimize_generated, pipeline. analyze is always free.
+        input_bytes:
+          type: integer
+          minimum: 1.0
+          title: Input Bytes
+          description: Size of the input image in bytes. Get it from analyze_image (free) if you do not know it.
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: Requested output format; only avif changes the price.
+        quality_target:
+          type: boolean
+          title: Quality Target
+          description: Whether the request will use quality_target (SSIM search surcharge).
+          default: false
+        operations:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EstimateOperation'
+            type: array
+          - type: 'null'
+          title: Operations
+          description: 'For pipeline only: the ordered operations, each {type, format?}. Volume discount applies at 3+ operations.'
+      type: object
+      required:
+      - operation
+      - input_bytes
+      title: EstimateRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    EstimateOperation:
+      properties:
+        type:
+          type: string
+          title: Type
+          description: 'Operation type: resize, compress, convert, or crop.'
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: Requested output format for this operation; only avif changes the price.
+      type: object
+      required:
+      - type
+      title: EstimateOperation
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    EstimateResponse:
+      properties:
+        operation:
+          type: string
+          title: Operation
+          description: Operation that was priced.
+        price_usd:
+          type: number
+          title: Price Usd
+          description: Exact list price in USD the API would charge.
+        base_usd:
+          type: number
+          title: Base Usd
+          description: Base price of the operation(s) before multipliers and surcharges.
+        surcharges_usd:
+          additionalProperties:
+            type: number
+          type: object
+          title: Surcharges Usd
+          description: Surcharges applied, keyed by name (avif, quality_target); empty when none.
+        size_multiplier:
+          type: number
+          title: Size Multiplier
+          description: Multiplier applied for the input size tier.
+        pipeline_discount:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pipeline Discount
+          description: Volume discount factor for pipelines of 3+ operations; null otherwise.
+        within_free_tier:
+          type: boolean
+          title: Within Free Tier
+          description: Whether the caller is still within the free tier.
+        free_tier_remaining:
+          type: integer
+          title: Free Tier Remaining
+          description: Free-tier requests left for the caller.
+        currency:
+          type: string
+          title: Currency
+          description: Settlement currency.
+        network:
+          type: string
+          title: Network
+          description: Settlement network.
+      type: object
+      required:
+      - operation
+      - price_usd
+      - base_usd
+      - surcharges_usd
+      - size_multiplier
+      - pipeline_discount
+      - within_free_tier
+      - free_tier_remaining
+      - currency
+      - network
+      title: EstimateResponse
+x-refined-from:
+- pictomancer-ai-openapi.json
+- pictomancer-ai-openapi.yml

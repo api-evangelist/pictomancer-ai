@@ -41,64 +41,12 @@ tags_raw:
 - Micropayments
 - Developer Tools
 apis:
-- aid: pictomancer-ai:pictomancer-ai-image-api
-  name: Pictomancer.ai Image API
-  description: 'REST API for image transformation: get_format_info, estimate_cost, analyze_image, resize_image,
-    compress_image, convert_image, crop_image, optimize_for_vision, optimize_generated_image and image_pipeline
-    (chain up to 10 steps, billed as one). JSON in, image bytes out (or JSON for analyze/estimate/info, or a delivery
-    receipt when writing to your bucket). OpenAPI 3.1.0 served at https://api.pictomancer.ai/openapi.json with Swagger
-    UI at /docs. Free tier of 50 requests per identity, then x402 USDC micropayments or an API key.'
-  humanURL: https://api.pictomancer.ai/docs
-  baseURL: https://api.pictomancer.ai
-  tags:
-  - Image
-  - Image Optimization
-  - Image Processing
-  - Compression
-  - Format Conversion
-  tags_raw:
-  - Images
-  - Image Optimization
-  - Image Processing
-  - Compression
-  - Format Conversion
-  properties:
-  - type: OpenAPI
-    url: openapi/pictomancer-ai-openapi.yml
-  - type: OpenAPI
-    name: Provider-hosted OpenAPI 3.1.0 (verbatim source in openapi/_original/)
-    url: https://api.pictomancer.ai/openapi.json
-  - type: Documentation
-    url: https://api.pictomancer.ai/docs
-  - type: APIReference
-    url: https://api.pictomancer.ai/docs
-  - type: Overlay
-    url: overlays/pictomancer-ai-openapi-overlay.yaml
-  - type: Authentication
-    url: authentication/pictomancer-ai-authentication.yml
-  - type: Conventions
-    url: conventions/pictomancer-ai-conventions.yml
-  - type: ErrorCatalog
-    url: errors/pictomancer-ai-problem-types.yml
-  - type: DataModel
-    url: data-model/pictomancer-ai-data-model.yml
-  - type: RateLimits
-    url: rate-limits/pictomancer-ai-rate-limits.yml
-  - type: Webhooks
-    url: asyncapi/pictomancer-ai-webhooks.yml
-  - type: AgentSkill
-    url: skills/_index.yml
-  - type: AgentSkill
-    url: skills/pictomancer-ai-optimize-generated-image.md
-  - type: AgentSkill
-    url: skills/pictomancer-ai-resize-and-deliver-to-bucket.md
-  - type: AgentSkill
-    url: skills/pictomancer-ai-pipeline-with-cost-cap.md
 - aid: pictomancer-ai:pictomancer-ai-mcp-server
   name: Pictomancer.ai MCP Server
-  description: Official hosted Model Context Protocol server at https://api.pictomancer.ai/mcp (Streamable HTTP,
-    protocol revision 2025-06-18, no authentication required, 120 requests/minute). Anonymous tools/list returns
-    ten tools with full JSON Schema inputSchema, one per REST operation. Discoverable via /.well-known/mcp.json
+  description: >-
+    Official hosted Model Context Protocol server at https://api.pictomancer.ai/mcp (Streamable HTTP,
+    protocol revision 2025-06-18, no authentication required, 120 requests/minute). Anonymous tools/list
+    returns ten tools with full JSON Schema inputSchema, one per REST operation. Discoverable via /.well-known/mcp.json
     on pictomancer.ai and api.pictomancer.ai and listed in the official MCP Registry as ai.pictomancer/image-processing;
     mcp.pictomancer.ai is a 308 alias.
   humanURL: https://pictomancer.ai/llms.txt
@@ -122,11 +70,12 @@ apis:
     url: https://pictomancer.ai/llms.txt
 - aid: pictomancer-ai:pictomancer-ai-a2a-agent
   name: Pictomancer.ai A2A Agent
-  description: 'Agent-to-Agent endpoint at https://api.pictomancer.ai/a2a (JSON-RPC) described by a published agent
+  description: >-
+    Agent-to-Agent endpoint at https://api.pictomancer.ai/a2a (JSON-RPC) described by a published agent
     card — canonical /.well-known/agent-card.json on api.pictomancer.ai (protocolVersion 0.3, graded conformant)
-    and a legacy /.well-known/agent.json on the apex (protocolVersion 1.0, with an x402 pricing extension). Eight
-    skills mirror the REST operations: analyze, resize, compress, convert, crop, optimize_for_vision, optimize_generated_image
-    and image_pipeline.'
+    and a legacy /.well-known/agent.json on the apex (protocolVersion 1.0, with an x402 pricing extension).
+    Eight skills mirror the REST operations: analyze, resize, compress, convert, crop, optimize_for_vision,
+    optimize_generated_image and image_pipeline.
   humanURL: https://api.pictomancer.ai/.well-known/agent-card.json
   baseURL: https://api.pictomancer.ai/a2a
   tags:
@@ -143,12 +92,283 @@ apis:
   - type: AgentCard
     name: Canonical agent card (provider-hosted)
     url: https://api.pictomancer.ai/.well-known/agent-card.json
+- aid: pictomancer-ai:pictomancer-ai-analyze-api
+  name: Pictomancer.ai Analyze API
+  description: The Analyze API from Pictomancer.ai — 1 operation(s) for analyze.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Analyze
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-analyze-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-compress-api
+  name: Pictomancer.ai Compress API
+  description: The Compress API from Pictomancer.ai — 1 operation(s) for compress.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Compress
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-compress-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-convert-api
+  name: Pictomancer.ai Convert API
+  description: The Convert API from Pictomancer.ai — 1 operation(s) for convert.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Convert
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-convert-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-crop-api
+  name: Pictomancer.ai Crop API
+  description: The Crop API from Pictomancer.ai — 1 operation(s) for crop.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Crop
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-crop-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-estimate-api
+  name: Pictomancer.ai Estimate API
+  description: The Estimate API from Pictomancer.ai — 1 operation(s) for estimate.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Estimate
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-estimate-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-info-api
+  name: Pictomancer.ai Info API
+  description: The Info API from Pictomancer.ai — 1 operation(s) for info.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Info
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-info-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-optimize-for-vision-api
+  name: Pictomancer.ai Optimize For Vision API
+  description: >-
+    The Optimize For Vision API from Pictomancer.ai — 1 operation(s) for optimize for vision.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Optimize For Vision
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-optimize-for-vision-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-optimize-generated-api
+  name: Pictomancer.ai Optimize Generated API
+  description: The Optimize Generated API from Pictomancer.ai — 1 operation(s) for optimize generated.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Optimize Generated
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-optimize-generated-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-pipeline-api
+  name: Pictomancer.ai Pipeline API
+  description: The Pipeline API from Pictomancer.ai — 1 operation(s) for pipeline.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Pipeline
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-pipeline-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
+- aid: pictomancer-ai:pictomancer-ai-resize-api
+  name: Pictomancer.ai Resize API
+  description: The Resize API from Pictomancer.ai — 1 operation(s) for resize.
+  humanURL: https://api.pictomancer.ai/docs
+  baseURL: https://api.pictomancer.ai
+  tags:
+  - Resize
+  properties:
+  - type: OpenAPI
+    url: openapi/pictomancer-ai-resize-api-openapi.yml
+  - type: Documentation
+    url: https://api.pictomancer.ai/docs
+  - type: APIReference
+    url: https://api.pictomancer.ai/docs
+  - type: Authentication
+    url: authentication/pictomancer-ai-authentication.yml
+  - type: Conventions
+    url: conventions/pictomancer-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pictomancer-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/pictomancer-ai-data-model.yml
+  - type: RateLimits
+    url: rate-limits/pictomancer-ai-rate-limits.yml
+  - type: Webhooks
+    url: asyncapi/pictomancer-ai-webhooks.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/pictomancer-ai-openapi-overlay.yaml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: AgentSkill
+  url: skills/pictomancer-ai-optimize-generated-image.md
+- type: AgentSkill
+  url: skills/pictomancer-ai-resize-and-deliver-to-bucket.md
+- type: AgentSkill
+  url: skills/pictomancer-ai-pipeline-with-cost-cap.md
 - type: Website
   url: https://pictomancer.ai/
 - type: Documentation
@@ -202,3 +422,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 27
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://api.pictomancer.ai/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "0.3"
+  control: 404

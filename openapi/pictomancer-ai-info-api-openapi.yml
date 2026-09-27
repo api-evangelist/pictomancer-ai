@@ -1,0 +1,24 @@
+openapi: 3.2.0
+info:
+  title: Pictomancer Ai Info API
+  version: 0.1.0
+  description: 'Operations tagged Info across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Info
+paths:
+  /v1/info:
+    get:
+      summary: Get supported formats and options
+      description: Returns supported output formats and their configurable options.
+      operationId: get_format_info
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Info
+x-refined-from:
+- pictomancer-ai-openapi.json
+- pictomancer-ai-openapi.yml

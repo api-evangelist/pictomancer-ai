@@ -1,0 +1,250 @@
+openapi: 3.2.0
+info:
+  title: Pictomancer Ai Crop API
+  version: 0.1.0
+  description: 'Operations tagged Crop across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+tags:
+- name: Crop
+paths:
+  /v1/crop:
+    post:
+      summary: Crop an image
+      description: 'Extract a rectangular region from an image, in one of three mutually exclusive modes. Manual: give the top-left corner (x, y) and dimensions (width, height) in pixels. Smart crop: give ''gravity'' (attention, entropy, centre) plus width and height; the window is picked automatically, clamped to the source if the target is larger. Trim: set ''trim: true'' (optional ''threshold'') to remove a uniform background border via content detection; the applied rect is reported in X-Pictomancer-Trim-* headers. Optional enhancement modifiers: denoise (1-3), equalize, sharpen (applied denoise -> equalize -> op -> sharpen).'
+      operationId: crop_image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CropRequest'
+        required: true
+      responses:
+        '200':
+          description: Processed image binary
+          content:
+            application/json:
+              schema: {}
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Crop
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    InlineDelivery:
+      properties:
+        mode:
+          type: string
+          const: inline
+          title: Mode
+          default: inline
+      additionalProperties: false
+      type: object
+      title: InlineDelivery
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PutUrlDelivery:
+      properties:
+        mode:
+          type: string
+          const: put_url
+          title: Mode
+        put_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Put Url
+          description: Customer-signed presigned PUT URL where the optimized bytes will be written. Must be https://. Cloud credentials never reach our infrastructure; only the URL itself is used and discarded after the request.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional storage headers to include on the PUT call (Content-Type, Cache-Control, x-amz-acl, etc.). Whitelisted at SSRF layer.
+      additionalProperties: false
+      type: object
+      required:
+      - mode
+      - put_url
+      title: PutUrlDelivery
+    CallbackDelivery:
+      properties:
+        mode:
+          type: string
+          const: callback_url
+          title: Mode
+        callback_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Callback Url
+          description: Customer endpoint where the optimized bytes will be POSTed. Must be https://. For async/large jobs. We send an X-Pig-Sha256 header of the body so the receiver can verify integrity. No credentials are stored on our side; secure the endpoint with a token in the URL itself.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional headers to include on the POST call (Content-Type, Cache-Control, x-amz-*, etc.). Whitelisted at SSRF layer.
+        secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secret
+          description: 'Optional HMAC secret. When set, we sign the POST body with HMAC-SHA256 and send ''X-Pig-Signature: sha256=<hex>''. Used per request and never stored. Recompute the HMAC on your endpoint to authenticate the callback (constant-time compare).'
+      additionalProperties: false
+      type: object
+      required:
+      - mode
+      - callback_url
+      title: CallbackDelivery
+    CropRequest:
+      properties:
+        delivery:
+          oneOf:
+          - $ref: '#/components/schemas/InlineDelivery'
+          - $ref: '#/components/schemas/PutUrlDelivery'
+          - $ref: '#/components/schemas/CallbackDelivery'
+          title: Delivery
+          discriminator:
+            propertyName: mode
+            mapping:
+              callback_url: '#/components/schemas/CallbackDelivery'
+              inline: '#/components/schemas/InlineDelivery'
+              put_url: '#/components/schemas/PutUrlDelivery'
+        source:
+          type: string
+          title: Source
+          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
+        x:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: X
+          description: Left edge of the crop rectangle in pixels. Manual mode only.
+        y:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Y
+          description: Top edge of the crop rectangle in pixels. Manual mode only.
+        width:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Width
+          description: Width of the crop rectangle in pixels. Required in manual and gravity modes.
+        height:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height
+          description: Height of the crop rectangle in pixels. Required in manual and gravity modes.
+        gravity:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gravity
+          description: 'Smart-crop mode: picks the window automatically. One of (''attention'', ''entropy'', ''centre''). Requires width and height; mutually exclusive with x/y and trim. A target larger than the source clamps to the source size.'
+        trim:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Trim
+          description: 'Trim mode: removes a uniform background border via content detection. Mutually exclusive with x/y/width/height/gravity.'
+        threshold:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Threshold
+          description: 'Trim sensitivity (must be positive; default 10.0). Only valid together with trim: true.'
+        autorot:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Autorot
+          description: Apply EXIF orientation before cropping. Opt-in; default false, which preserves current byte-for-byte behavior.
+        denoise:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Denoise
+          description: 'Median denoise before cropping: radius 1-3 (window 3x3 to 7x7). Opt-in; no surcharge.'
+        equalize:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Equalize
+          description: Auto-contrast (histogram equalisation of the value channel; hue and saturation preserved) before cropping. Opt-in.
+        sharpen:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Sharpen
+          description: Unsharp-mask sharpen after cropping (libvips defaults). Opt-in.
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: 'Output format: jpeg, png, webp, tiff, gif, or avif. If omitted, the original format is preserved.'
+      additionalProperties: true
+      type: object
+      required:
+      - source
+      title: CropRequest
+x-refined-from:
+- pictomancer-ai-openapi.json
+- pictomancer-ai-openapi.yml
