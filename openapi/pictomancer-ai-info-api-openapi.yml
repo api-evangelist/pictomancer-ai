@@ -1,8 +1,7 @@
 openapi: 3.2.0
 info:
-  title: Pictomancer Ai Info API
+  title: Pictomancer.ai Gateway Info API
   version: 0.1.0
-  description: 'Operations tagged Info across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Info
 paths:
@@ -19,6 +18,3 @@ paths:
               schema: {}
       tags:
       - Info
-x-refined-from:
-- pictomancer-ai-openapi.json
-- pictomancer-ai-openapi.yml

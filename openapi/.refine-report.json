@@ -1,8 +1,7 @@
 {
   "provider": "pictomancer-ai",
   "sources": [
-    "_original/pictomancer-ai-openapi.json",
-    "pictomancer-ai-openapi.yml"
+    "_original/pictomancer-ai-openapi.json"
   ],
   "outputs": [
     "pictomancer-ai-analyze-api-openapi.yml",
@@ -16,12 +15,11 @@
     "pictomancer-ai-pipeline-api-openapi.yml",
     "pictomancer-ai-resize-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/pictomancer-ai-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "pictomancer-ai-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "pictomancer-ai-openapi.json: tagged paths GET /v1/info -> Info",
@@ -44,38 +42,19 @@
     "pictomancer-ai-openapi.json: declared missing tag: Optimize Generated",
     "pictomancer-ai-openapi.json: declared missing tag: Pipeline",
     "pictomancer-ai-openapi.json: declared missing tag: Resize",
-    "pictomancer-ai-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "pictomancer-ai-openapi.yml: tagged paths GET /v1/info -> Info",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/estimate -> Estimate",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/analyze -> Analyze",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/resize -> Resize",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/compress -> Compress",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/convert -> Convert",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/crop -> Crop",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/optimize_for_vision -> Optimize For Vision",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/optimize_generated -> Optimize Generated",
-    "pictomancer-ai-openapi.yml: tagged paths POST /v1/pipeline -> Pipeline",
-    "pictomancer-ai-openapi.yml: declared missing tag: Analyze",
-    "pictomancer-ai-openapi.yml: declared missing tag: Compress",
-    "pictomancer-ai-openapi.yml: declared missing tag: Convert",
-    "pictomancer-ai-openapi.yml: declared missing tag: Crop",
-    "pictomancer-ai-openapi.yml: declared missing tag: Estimate",
-    "pictomancer-ai-openapi.yml: declared missing tag: Info",
-    "pictomancer-ai-openapi.yml: declared missing tag: Optimize For Vision",
-    "pictomancer-ai-openapi.yml: declared missing tag: Optimize Generated",
-    "pictomancer-ai-openapi.yml: declared missing tag: Pipeline",
-    "pictomancer-ai-openapi.yml: declared missing tag: Resize",
-    "tag 'Analyze' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Compress' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Convert' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Crop' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Estimate' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Info' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Optimize For Vision' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Optimize Generated' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Pipeline' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "tag 'Resize' spans 2 source specs (pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml): per-path servers applied",
-    "apis.yml register: written (+10 apis, 12 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/pictomancer-ai-openapi.yml: archived document superseded by a larger archived document",
+    "pictomancer-ai-analyze-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-compress-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-convert-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-crop-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-estimate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-info-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-optimize-for-vision-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-optimize-generated-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-pipeline-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "pictomancer-ai-resize-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

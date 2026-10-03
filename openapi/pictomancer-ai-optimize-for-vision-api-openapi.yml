@@ -1,8 +1,7 @@
 openapi: 3.2.0
 info:
-  title: Pictomancer Ai Optimize For Vision API
+  title: Pictomancer.ai Gateway Optimize For Vision API
   version: 0.1.0
-  description: 'Operations tagged Optimize For Vision across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Optimize For Vision
 paths:
@@ -45,6 +44,42 @@ paths:
       - Optimize For Vision
 components:
   schemas:
+    PutUrlDelivery:
+      properties:
+        mode:
+          type: string
+          const: put_url
+          title: Mode
+        put_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Put Url
+          description: Customer-signed presigned PUT URL where the optimized bytes will be written. Must be https://. Cloud credentials never reach our infrastructure; only the URL itself is used and discarded after the request.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional storage headers to include on the PUT call (Content-Type, Cache-Control, x-amz-acl, etc.). Whitelisted at SSRF layer.
+      additionalProperties: false
+      type: object
+      required:
+      - mode
+      - put_url
+      title: PutUrlDelivery
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     OptimizeForVisionRequest:
       properties:
         delivery:
@@ -91,78 +126,6 @@ components:
       - source
       - target_model
       title: OptimizeForVisionRequest
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    InlineDelivery:
-      properties:
-        mode:
-          type: string
-          const: inline
-          title: Mode
-          default: inline
-      additionalProperties: false
-      type: object
-      title: InlineDelivery
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PutUrlDelivery:
-      properties:
-        mode:
-          type: string
-          const: put_url
-          title: Mode
-        put_url:
-          type: string
-          maxLength: 2083
-          minLength: 1
-          format: uri
-          title: Put Url
-          description: Customer-signed presigned PUT URL where the optimized bytes will be written. Must be https://. Cloud credentials never reach our infrastructure; only the URL itself is used and discarded after the request.
-        headers:
-          anyOf:
-          - additionalProperties:
-              type: string
-            type: object
-          - type: 'null'
-          title: Headers
-          description: Optional storage headers to include on the PUT call (Content-Type, Cache-Control, x-amz-acl, etc.). Whitelisted at SSRF layer.
-      additionalProperties: false
-      type: object
-      required:
-      - mode
-      - put_url
-      title: PutUrlDelivery
     CallbackDelivery:
       properties:
         mode:
@@ -196,6 +159,39 @@ components:
       - mode
       - callback_url
       title: CallbackDelivery
-x-refined-from:
-- pictomancer-ai-openapi.json
-- pictomancer-ai-openapi.yml
+    InlineDelivery:
+      properties:
+        mode:
+          type: string
+          const: inline
+          title: Mode
+          default: inline
+      additionalProperties: false
+      type: object
+      title: InlineDelivery
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

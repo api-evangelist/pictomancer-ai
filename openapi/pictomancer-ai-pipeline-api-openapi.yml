@@ -1,8 +1,7 @@
 openapi: 3.2.0
 info:
-  title: Pictomancer Ai Pipeline API
+  title: Pictomancer.ai Gateway Pipeline API
   version: 0.1.0
-  description: 'Operations tagged Pipeline across 2 of this provider''s published API definitions: pictomancer-ai-openapi.json, pictomancer-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 tags:
 - name: Pipeline
 paths:
@@ -45,51 +44,6 @@ paths:
       - Pipeline
 components:
   schemas:
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    InlineDelivery:
-      properties:
-        mode:
-          type: string
-          const: inline
-          title: Mode
-          default: inline
-      additionalProperties: false
-      type: object
-      title: InlineDelivery
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     PutUrlDelivery:
       properties:
         mode:
@@ -117,6 +71,44 @@ components:
       - mode
       - put_url
       title: PutUrlDelivery
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PipelineRequest:
+      properties:
+        delivery:
+          oneOf:
+          - $ref: '#/components/schemas/InlineDelivery'
+          - $ref: '#/components/schemas/PutUrlDelivery'
+          - $ref: '#/components/schemas/CallbackDelivery'
+          title: Delivery
+          discriminator:
+            propertyName: mode
+            mapping:
+              callback_url: '#/components/schemas/CallbackDelivery'
+              inline: '#/components/schemas/InlineDelivery'
+              put_url: '#/components/schemas/PutUrlDelivery'
+        source:
+          type: string
+          title: Source
+          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
+        operations:
+          items:
+            $ref: '#/components/schemas/PipelineOperation'
+          type: array
+          title: Operations
+          description: Ordered list of operations to apply sequentially. Each operation receives the output of the previous one. Max 10.
+      type: object
+      required:
+      - source
+      - operations
+      title: PipelineRequest
     CallbackDelivery:
       properties:
         mode:
@@ -150,35 +142,6 @@ components:
       - mode
       - callback_url
       title: CallbackDelivery
-    PipelineRequest:
-      properties:
-        delivery:
-          oneOf:
-          - $ref: '#/components/schemas/InlineDelivery'
-          - $ref: '#/components/schemas/PutUrlDelivery'
-          - $ref: '#/components/schemas/CallbackDelivery'
-          title: Delivery
-          discriminator:
-            propertyName: mode
-            mapping:
-              callback_url: '#/components/schemas/CallbackDelivery'
-              inline: '#/components/schemas/InlineDelivery'
-              put_url: '#/components/schemas/PutUrlDelivery'
-        source:
-          type: string
-          title: Source
-          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
-        operations:
-          items:
-            $ref: '#/components/schemas/PipelineOperation'
-          type: array
-          title: Operations
-          description: Ordered list of operations to apply sequentially. Each operation receives the output of the previous one. Max 10.
-      type: object
-      required:
-      - source
-      - operations
-      title: PipelineRequest
     PipelineOperation:
       properties:
         type:
@@ -196,6 +159,39 @@ components:
       required:
       - type
       title: PipelineOperation
-x-refined-from:
-- pictomancer-ai-openapi.json
-- pictomancer-ai-openapi.yml
+    InlineDelivery:
+      properties:
+        mode:
+          type: string
+          const: inline
+          title: Mode
+          default: inline
+      additionalProperties: false
+      type: object
+      title: InlineDelivery
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
