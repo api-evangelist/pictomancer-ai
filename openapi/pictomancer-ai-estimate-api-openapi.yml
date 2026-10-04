@@ -42,41 +42,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    EstimateRequest:
-      properties:
-        operation:
-          type: string
-          title: Operation
-          description: Operation to price. One of resize, compress, convert, crop, optimize_for_vision, optimize_generated, pipeline. analyze is always free.
-        input_bytes:
-          type: integer
-          minimum: 1.0
-          title: Input Bytes
-          description: Size of the input image in bytes. Get it from analyze_image (free) if you do not know it.
-        format:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Format
-          description: Requested output format; only avif changes the price.
-        quality_target:
-          type: boolean
-          title: Quality Target
-          description: Whether the request will use quality_target (SSIM search surcharge).
-          default: false
-        operations:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/EstimateOperation'
-            type: array
-          - type: 'null'
-          title: Operations
-          description: 'For pipeline only: the ordered operations, each {type, format?}. Volume discount applies at 3+ operations.'
-      type: object
-      required:
-      - operation
-      - input_bytes
-      title: EstimateRequest
     EstimateResponse:
       properties:
         operation:
@@ -136,22 +101,6 @@ components:
       - currency
       - network
       title: EstimateResponse
-    EstimateOperation:
-      properties:
-        type:
-          type: string
-          title: Type
-          description: 'Operation type: resize, compress, convert, or crop.'
-        format:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Format
-          description: Requested output format for this operation; only avif changes the price.
-      type: object
-      required:
-      - type
-      title: EstimateOperation
     ValidationError:
       properties:
         loc:
@@ -178,3 +127,54 @@ components:
       - msg
       - type
       title: ValidationError
+    EstimateRequest:
+      properties:
+        operation:
+          type: string
+          title: Operation
+          description: Operation to price. One of resize, compress, convert, crop, optimize_for_vision, optimize_generated, pipeline. analyze is always free.
+        input_bytes:
+          type: integer
+          minimum: 1.0
+          title: Input Bytes
+          description: Size of the input image in bytes. Get it from analyze_image (free) if you do not know it.
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: Requested output format; only avif changes the price.
+        quality_target:
+          type: boolean
+          title: Quality Target
+          description: Whether the request will use quality_target (SSIM search surcharge).
+          default: false
+        operations:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EstimateOperation'
+            type: array
+          - type: 'null'
+          title: Operations
+          description: 'For pipeline only: the ordered operations, each {type, format?}. Volume discount applies at 3+ operations.'
+      type: object
+      required:
+      - operation
+      - input_bytes
+      title: EstimateRequest
+    EstimateOperation:
+      properties:
+        type:
+          type: string
+          title: Type
+          description: 'Operation type: resize, compress, convert, or crop.'
+        format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Format
+          description: Requested output format for this operation; only avif changes the price.
+      type: object
+      required:
+      - type
+      title: EstimateOperation

@@ -44,6 +44,78 @@ paths:
       - Compress
 components:
   schemas:
+    PutUrlDelivery:
+      properties:
+        mode:
+          type: string
+          const: put_url
+          title: Mode
+        put_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Put Url
+          description: Customer-signed presigned PUT URL where the optimized bytes will be written. Must be https://. Cloud credentials never reach our infrastructure; only the URL itself is used and discarded after the request.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional storage headers to include on the PUT call (Content-Type, Cache-Control, x-amz-acl, etc.). Whitelisted at SSRF layer.
+      additionalProperties: false
+      type: object
+      required:
+      - mode
+      - put_url
+      title: PutUrlDelivery
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    InlineDelivery:
+      properties:
+        mode:
+          type: string
+          const: inline
+          title: Mode
+          default: inline
+      additionalProperties: false
+      type: object
+      title: InlineDelivery
     CompressRequest:
       properties:
         delivery:
@@ -115,42 +187,6 @@ components:
       required:
       - source
       title: CompressRequest
-    PutUrlDelivery:
-      properties:
-        mode:
-          type: string
-          const: put_url
-          title: Mode
-        put_url:
-          type: string
-          maxLength: 2083
-          minLength: 1
-          format: uri
-          title: Put Url
-          description: Customer-signed presigned PUT URL where the optimized bytes will be written. Must be https://. Cloud credentials never reach our infrastructure; only the URL itself is used and discarded after the request.
-        headers:
-          anyOf:
-          - additionalProperties:
-              type: string
-            type: object
-          - type: 'null'
-          title: Headers
-          description: Optional storage headers to include on the PUT call (Content-Type, Cache-Control, x-amz-acl, etc.). Whitelisted at SSRF layer.
-      additionalProperties: false
-      type: object
-      required:
-      - mode
-      - put_url
-      title: PutUrlDelivery
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     CallbackDelivery:
       properties:
         mode:
@@ -184,39 +220,3 @@ components:
       - mode
       - callback_url
       title: CallbackDelivery
-    InlineDelivery:
-      properties:
-        mode:
-          type: string
-          const: inline
-          title: Mode
-          default: inline
-      additionalProperties: false
-      type: object
-      title: InlineDelivery
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError

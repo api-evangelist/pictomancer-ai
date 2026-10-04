@@ -42,32 +42,32 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ProvenanceInfo:
+    ValidationError:
       properties:
-        c2pa:
-          type: boolean
-          title: C2Pa
-          description: True when the input embeds a C2PA (Content Credentials) manifest. Presence only; the signature is not validated.
-        container:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Container
-          description: 'Where the manifest was found: jpeg-app11, png-caBX, webp-C2PA, isobmff-uuid, or null.'
-      type: object
-      required:
-      - c2pa
-      title: ProvenanceInfo
-    ImageSource:
-      properties:
-        source:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
           type: string
-          title: Source
-          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - source
-      title: ImageSource
+      - loc
+      - msg
+      - type
+      title: ValidationError
     AnalyzeResponse:
       properties:
         size_bytes:
@@ -114,29 +114,29 @@ components:
       required:
       - size_bytes
       title: AnalyzeResponse
-    ValidationError:
+    ImageSource:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
+        source:
           type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Source
+          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - source
+      title: ImageSource
+    ProvenanceInfo:
+      properties:
+        c2pa:
+          type: boolean
+          title: C2Pa
+          description: True when the input embeds a C2PA (Content Credentials) manifest. Presence only; the signature is not validated.
+        container:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Container
+          description: 'Where the manifest was found: jpeg-app11, png-caBX, webp-C2PA, isobmff-uuid, or null.'
+      type: object
+      required:
+      - c2pa
+      title: ProvenanceInfo

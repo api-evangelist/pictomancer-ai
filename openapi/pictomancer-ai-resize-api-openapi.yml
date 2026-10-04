@@ -80,39 +80,42 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    CallbackDelivery:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    InlineDelivery:
       properties:
         mode:
           type: string
-          const: callback_url
+          const: inline
           title: Mode
-        callback_url:
-          type: string
-          maxLength: 2083
-          minLength: 1
-          format: uri
-          title: Callback Url
-          description: Customer endpoint where the optimized bytes will be POSTed. Must be https://. For async/large jobs. We send an X-Pig-Sha256 header of the body so the receiver can verify integrity. No credentials are stored on our side; secure the endpoint with a token in the URL itself.
-        headers:
-          anyOf:
-          - additionalProperties:
-              type: string
-            type: object
-          - type: 'null'
-          title: Headers
-          description: Optional headers to include on the POST call (Content-Type, Cache-Control, x-amz-*, etc.). Whitelisted at SSRF layer.
-        secret:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Secret
-          description: 'Optional HMAC secret. When set, we sign the POST body with HMAC-SHA256 and send ''X-Pig-Signature: sha256=<hex>''. Used per request and never stored. Recompute the HMAC on your endpoint to authenticate the callback (constant-time compare).'
+          default: inline
       additionalProperties: false
       type: object
-      required:
-      - mode
-      - callback_url
-      title: CallbackDelivery
+      title: InlineDelivery
     ResizeRequest:
       properties:
         delivery:
@@ -202,39 +205,36 @@ components:
       required:
       - source
       title: ResizeRequest
-    InlineDelivery:
+    CallbackDelivery:
       properties:
         mode:
           type: string
-          const: inline
+          const: callback_url
           title: Mode
-          default: inline
+        callback_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Callback Url
+          description: Customer endpoint where the optimized bytes will be POSTed. Must be https://. For async/large jobs. We send an X-Pig-Sha256 header of the body so the receiver can verify integrity. No credentials are stored on our side; secure the endpoint with a token in the URL itself.
+        headers:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Headers
+          description: Optional headers to include on the POST call (Content-Type, Cache-Control, x-amz-*, etc.). Whitelisted at SSRF layer.
+        secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secret
+          description: 'Optional HMAC secret. When set, we sign the POST body with HMAC-SHA256 and send ''X-Pig-Signature: sha256=<hex>''. Used per request and never stored. Recompute the HMAC on your endpoint to authenticate the callback (constant-time compare).'
       additionalProperties: false
       type: object
-      title: InlineDelivery
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - mode
+      - callback_url
+      title: CallbackDelivery
