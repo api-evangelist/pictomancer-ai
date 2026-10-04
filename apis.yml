@@ -307,6 +307,8 @@ apis:
   humanURL: https://api.pictomancer.ai/docs
   baseURL: https://api.pictomancer.ai
   tags:
+  - Pipelines
+  tags_raw:
   - Pipeline
   properties:
   - type: OpenAPI
@@ -333,6 +335,8 @@ apis:
   humanURL: https://api.pictomancer.ai/docs
   baseURL: https://api.pictomancer.ai
   tags:
+  - resize
+  tags_raw:
   - Resize
   properties:
   - type: OpenAPI
