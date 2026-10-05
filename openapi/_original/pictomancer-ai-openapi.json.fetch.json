@@ -1,0 +1,12 @@
+{
+ "url": "https://api.pictomancer.ai/openapi.json",
+ "requested_url": "https://api.pictomancer.ai/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 33806,
+ "sha256": "14cad4bac2852505c1f332a540abf55bc86242d98ae4cbdf291eeccae7fe55e0",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
