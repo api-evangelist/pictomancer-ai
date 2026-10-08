@@ -86,3 +86,52 @@ plans:
   - {request: compress to SSIM >= 0.95 500KB, price: 0.005}
   - {request: pipeline 3 ops 7MB, price: 0.008}
   - {request: 'homepage receipt: pipeline resize x0.625 -> convert webp q=80 on a 2.9 MB JPEG', price: 0.0045, note: $0.003 base x 1.5 size multiplier}
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - metered
+  - negotiated
+  - subscription
+  units:
+  - object
+  - request
+  plans:
+  - name: Free
+    access: free
+    model: free
+    model_how: derived
+    units:
+    - request
+    periods:
+    - other
+  - name: Dev
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - object
+    periods:
+    - month
+  - name: Pro
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - object
+    periods:
+    - month
+  - name: Enterprise
+    access: negotiated
+    model: negotiated
+    model_how: stated
+    units: []
+    periods: []
+  - name: Pay-per-request
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - request
+    periods: []
