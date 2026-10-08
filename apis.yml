@@ -363,6 +363,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: RateLimits
+  url: rate-limits/pictomancer-ai-rate-limits.yml
 - type: Overlay
   url: overlays/pictomancer-ai-openapi-overlay.yaml
 - type: AgentSkill
