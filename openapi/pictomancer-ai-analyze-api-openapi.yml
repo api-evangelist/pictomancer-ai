@@ -42,6 +42,32 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ImageSource:
+      properties:
+        source:
+          type: string
+          title: Source
+          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
+      type: object
+      required:
+      - source
+      title: ImageSource
+    ProvenanceInfo:
+      properties:
+        c2pa:
+          type: boolean
+          title: C2Pa
+          description: True when the input embeds a C2PA (Content Credentials) manifest. Presence only; the signature is not validated.
+        container:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Container
+          description: 'Where the manifest was found: jpeg-app11, png-caBX, webp-C2PA, isobmff-uuid, or null.'
+      type: object
+      required:
+      - c2pa
+      title: ProvenanceInfo
     ValidationError:
       properties:
         loc:
@@ -114,29 +140,3 @@ components:
       required:
       - size_bytes
       title: AnalyzeResponse
-    ImageSource:
-      properties:
-        source:
-          type: string
-          title: Source
-          description: 'Image source: a public URL (https://...) or a base64-encoded string (optionally as a data URI like data:image/png;base64,...).'
-      type: object
-      required:
-      - source
-      title: ImageSource
-    ProvenanceInfo:
-      properties:
-        c2pa:
-          type: boolean
-          title: C2Pa
-          description: True when the input embeds a C2PA (Content Credentials) manifest. Presence only; the signature is not validated.
-        container:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Container
-          description: 'Where the manifest was found: jpeg-app11, png-caBX, webp-C2PA, isobmff-uuid, or null.'
-      type: object
-      required:
-      - c2pa
-      title: ProvenanceInfo
