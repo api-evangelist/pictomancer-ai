@@ -52,13 +52,32 @@ server:
     fetched: '2026-09-19'
 tools:
 - name: get_format_info
-  description: Get supported formats and options
+  description: 'Get supported formats and options
+
+
+    Returns supported output formats and their configurable options.
+
+
+    ### Responses:
+
+
+    **200**: Successful Response (Success Response)
+
+    Content-Type: application/json'
   input_schema:
     required: []
     properties: {}
   source_operation: openapi/pictomancer-ai-openapi.yml#get_format_info
 - name: estimate_cost
-  description: Estimate the price of an operation
+  description: "Estimate the price of an operation\n\nReturns the exact USD price this API would charge\
+    \ for an operation on an input of the given size, without fetching or processing anything. Free. Use\
+    \ it before paying: send X-Max-Cost-USD on the real request to have the API refuse (412) instead of\
+    \ charging more than you allowed. The list price is returned even when the request could end up free\
+    \ (free tier, or a compress that does not shrink the file).\n\n### Responses:\n\n**200**: Successful\
+    \ Response (Success Response)\nContent-Type: application/json\n\n**Example Response:**\n```json\n\
+    {\n  \"operation\": \"Operation\",\n  \"price_usd\": 1.0,\n  \"base_usd\": 1.0,\n  \"surcharges_usd\"\
+    : {},\n  \"size_multiplier\": 1.0,\n  \"within_free_tier\": true,\n  \"free_tier_remaining\": 1,\n\
+    \  \"currency\": \"Currency\",\n  \"network\": \"Network\"\n}\n```"
   input_schema:
     required:
     - operation
@@ -71,7 +90,12 @@ tools:
       operations: array
   source_operation: openapi/pictomancer-ai-openapi.yml#estimate_cost
 - name: analyze_image
-  description: Analyze an image
+  description: "Analyze an image\n\nFetch an image from a URL or base64 and return its metadata: size\
+    \ in bytes, pixel dimensions, source format, and what it costs every supported vision model in tokens.\
+    \ Always free. Dimensions are omitted if the image header cannot be read. Also reports whether the\
+    \ input carries a C2PA (Content Credentials) manifest and in which container; the manifest is not\
+    \ validated.\n\n### Responses:\n\n**200**: Successful Response (Success Response)\nContent-Type: application/json\n\
+    \n**Example Response:**\n```json\n{\n  \"size_bytes\": 1,\n  \"c2pa_manifest\": true\n}\n```"
   input_schema:
     required:
     - source
@@ -79,7 +103,55 @@ tools:
       source: string
   source_operation: openapi/pictomancer-ai-openapi.yml#analyze_image
 - name: resize_image
-  description: Resize an image
+  description: 'Resize an image
+
+
+    Scale an image by a factor, or fill an exact box. Use ''scale'' for uniform scaling, or ''scale_x''/''scale_y''
+    for independent axes (float factors, e.g. 0.5 = half size). Alternatively set ''width''+''height''
+    for fill mode: resize and smart-crop to those exact dimensions in one call (optional ''gravity'',
+    default attention). The two modes are mutually exclusive. Optional enhancement modifiers: denoise
+    (1-3), equalize, sharpen (applied denoise -> equalize -> op -> sharpen).
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -99,7 +171,56 @@ tools:
       sharpen: boolean
   source_operation: openapi/pictomancer-ai-openapi.yml#resize_image
 - name: compress_image
-  description: Compress an image
+  description: 'Compress an image
+
+
+    Re-encode an image with quality/format options to reduce file size. Supports jpeg, png, webp, tiff,
+    gif. Instead of a q number you can set quality_target (0-1]: the smallest file with SSIM at or above
+    the target, searched on the worker (jpeg, webp, avif; flat surcharge; outcome reported in X-Pictomancer-Quality-*
+    headers). If the output is not smaller than the input, the request is free (X-Pig-Billed: 0) and does
+    not consume free-tier quota. Optional enhancement modifiers: denoise (1-3), equalize, sharpen (applied
+    denoise -> equalize -> op -> sharpen).
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -116,7 +237,56 @@ tools:
       sharpen: boolean
   source_operation: openapi/pictomancer-ai-openapi.yml#compress_image
 - name: convert_image
-  description: Convert image format
+  description: 'Convert image format
+
+
+    Convert an image to a different format (jpeg, png, webp, tiff, gif, avif). Optionally set quality,
+    strip metadata, enable lossless mode (webp, avif), or tune encoder effort (avif). Instead of a q number
+    you can set quality_target (0-1]: the smallest file with SSIM at or above the target, searched on
+    the worker (jpeg, webp, avif; flat surcharge; outcome reported in X-Pictomancer-Quality-* headers).
+    Optional enhancement modifiers: denoise (1-3), equalize, sharpen (applied denoise -> equalize -> op
+    -> sharpen).
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -136,7 +306,57 @@ tools:
       sharpen: boolean
   source_operation: openapi/pictomancer-ai-openapi.yml#convert_image
 - name: crop_image
-  description: Crop an image
+  description: 'Crop an image
+
+
+    Extract a rectangular region from an image, in one of three mutually exclusive modes. Manual: give
+    the top-left corner (x, y) and dimensions (width, height) in pixels. Smart crop: give ''gravity''
+    (attention, entropy, centre) plus width and height; the window is picked automatically, clamped to
+    the source if the target is larger. Trim: set ''trim: true'' (optional ''threshold'') to remove a
+    uniform background border via content detection; the applied rect is reported in X-Pictomancer-Trim-*
+    headers. Optional enhancement modifiers: denoise (1-3), equalize, sharpen (applied denoise -> equalize
+    -> op -> sharpen).
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -157,7 +377,56 @@ tools:
       format: string
   source_operation: openapi/pictomancer-ai-openapi.yml#crop_image
 - name: optimize_for_vision
-  description: Resize an image for a vision model
+  description: 'Resize an image for a vision model
+
+
+    Resize an image to the largest size a given vision model still benefits from, and report what it costs
+    that model in tokens before and after. Every provider downscales oversized input before counting tokens,
+    so this alone saves bytes and upload latency rather than tokens. Pass max_tokens to trade resolution
+    for tokens: that lever is continuous on Claude, unavailable on OpenAI (cost follows the aspect ratio
+    alone), and on Gemini reaches only a flat 258. An image already within budget is returned untouched
+    and free (X-Pig-Billed: 0).
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -171,7 +440,58 @@ tools:
       q: integer
   source_operation: openapi/pictomancer-ai-openapi.yml#optimize_for_vision
 - name: optimize_generated_image
-  description: Optimize an AI-generated image for the web
+  description: 'Optimize an AI-generated image for the web
+
+
+    The step after image generation. gpt-image, DALL-E, Flux, Midjourney and Stable Diffusion hand back
+    2-8 MB PNGs; this returns the same picture as a web-ready webp (default), avif, jpeg or png, metadata
+    stripped, transparency kept on webp/avif/png. Optional max_dimension caps the longest side (never
+    upscales); optional q or quality_target (smallest file with SSIM >= target, flat surcharge) control
+    quality. Same price as convert. If the result is not smaller than the input it is still returned but
+    free (X-Pig-Billed: 0). X-Pictomancer-Bytes-Before/-After/-Saved-Percent report the saving. The input''s
+    C2PA manifest, if any, is reported in X-Pictomancer-C2PA-Input but is not carried over: re-encoding
+    invalidates it.
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -185,7 +505,52 @@ tools:
       strip: boolean
   source_operation: openapi/pictomancer-ai-openapi.yml#optimize_generated_image
 - name: image_pipeline
-  description: Run a multi-step image pipeline
+  description: 'Run a multi-step image pipeline
+
+
+    Chain multiple operations (resize, compress, convert, crop) in sequence. The image is fetched once,
+    then each operation is applied to the output of the previous one. Max 10 operations per pipeline.
+
+
+    ### Responses:
+
+
+    **200**: Processed image binary (Success Response)
+
+    Content-Type: application/json
+
+    Content-Type: image/jpeg
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/png
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```
+
+    Content-Type: image/webp
+
+
+    **Example Response:**
+
+    ```json
+
+    "string"
+
+    ```'
   input_schema:
     required:
     - source
@@ -230,3 +595,4 @@ tool_quality:
   scored: false
   note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
     from Glimind's agent-readiness audit.
+tools_count: 10
