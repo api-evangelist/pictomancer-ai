@@ -1,6 +1,12 @@
 {
-  "jsonrpc": "2.0",
-  "id": 2,
+  "endpoint": "https://api.pictomancer.ai/mcp",
+  "captured": "2026-10-20",
+  "method": "initialize + tools/list (anonymous, no tool called; roadmap#992)",
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "Pictomancer.ai",
+    "version": "Agent-to-agent image processing: resize, convert, compress, crop, pipeline, and one-call optimization of AI-generated images for the web. Sub-50ms latency, USDC micropayments via x402."
+  },
   "result": {
     "tools": [
       {

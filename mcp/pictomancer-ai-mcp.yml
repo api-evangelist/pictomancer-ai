@@ -3,22 +3,24 @@ method: probed
 status: published
 source: https://api.pictomancer.ai/mcp (POST initialize -> notifications/initialized -> tools/list, 2026-09-19)
 docs: https://api.pictomancer.ai/docs
-summary: Pictomancer.ai operates one official remote MCP server at https://api.pictomancer.ai/mcp (Streamable HTTP,
-  MCP protocol revision 2025-06-18, tools capability only, no auth required). It is discoverable from /.well-known/mcp.json
-  on both pictomancer.ai and api.pictomancer.ai, from the A2A agent card's additionalInterfaces, and is listed in
-  the official MCP Registry as ai.pictomancer/image-processing (latest 0.4.0, 2026-08-17). mcp.pictomancer.ai is
-  a 308 alias that redirects to api.pictomancer.ai. Anonymous tools/list succeeded and returned 10 tools with full
-  inputSchema; the verbatim response is saved in mcp/pictomancer-ai-mcp-tools.json.
+summary: Pictomancer.ai operates one official remote MCP server at https://api.pictomancer.ai/mcp (Streamable
+  HTTP, MCP protocol revision 2025-06-18, tools capability only, no auth required). It is discoverable
+  from /.well-known/mcp.json on both pictomancer.ai and api.pictomancer.ai, from the A2A agent card's
+  additionalInterfaces, and is listed in the official MCP Registry as ai.pictomancer/image-processing
+  (latest 0.4.0, 2026-08-17). mcp.pictomancer.ai is a 308 alias that redirects to api.pictomancer.ai.
+  Anonymous tools/list succeeded and returned 10 tools with full inputSchema; the verbatim response is
+  saved in mcp/pictomancer-ai-mcp-tools.json.
 deployment:
   mode: remote
   endpoint: https://api.pictomancer.ai/mcp
   auth: none
   verified: probed
-  note: 'Anonymous initialize returned 200 with a mcp-session-id header and tools/list returned 200 with 10 tools;
-    the server requires the session id on every call after initialize (a bare tools/list is refused with -32600
-    Missing session ID). No stdio package is published: the SDKs (npm @pictomancer/node, PyPI pictomancer, Packagist,
-    Go) are REST clients, not MCP servers. Payment is per-request via x402 (HTTP 402 -> USDC on Base) or an API
-    key; identity is the X-Agent-Wallet header or the caller IP, with 50 free requests per identity.'
+  note: 'Anonymous initialize returned 200 with a mcp-session-id header and tools/list returned 200 with
+    10 tools; the server requires the session id on every call after initialize (a bare tools/list is
+    refused with -32600 Missing session ID). No stdio package is published: the SDKs (npm @pictomancer/node,
+    PyPI pictomancer, Packagist, Go) are REST clients, not MCP servers. Payment is per-request via x402
+    (HTTP 402 -> USDC on Base) or an API key; identity is the X-Agent-Wallet header or the caller IP,
+    with 50 free requests per identity.'
 server:
   name: Pictomancer.ai
   transport: streamable-http
@@ -193,3 +195,38 @@ tools:
       source: string
       operations: array
   source_operation: openapi/pictomancer-ai-openapi.yml#image_pipeline
+tool_quality:
+  tool_count: 10
+  tokens_total: 11046
+  tokens_per_tool_median: 1348
+  heavy_tools:
+  - name: crop_image
+    tokens: 1678
+  - name: resize_image
+    tokens: 1619
+  - name: convert_image
+    tokens: 1521
+  - name: compress_image
+    tokens: 1487
+  - name: optimize_generated_image
+    tokens: 1379
+  heavy_tool_count: 6
+  params_total: 71
+  params_undescribed: 7
+  params_described_pct: 90.1
+  tools_with_undescribed_params: 7
+  tools_annotated: 0
+  annotated_pct: 0.0
+  state_changing_unhinted: []
+  tools_missing_schema: 0
+  short_descriptions: 0
+  duplicate_descriptions: 0
+  duplicate_names: 0
+  nonportable_names: []
+  output_schema_count: 0
+  token_estimate: chars/3.6 of each compact tool definition
+  source: mcp/pictomancer-ai-mcp-tools.json
+  measured: '2026-10-20'
+  scored: false
+  note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
+    from Glimind's agent-readiness audit.
