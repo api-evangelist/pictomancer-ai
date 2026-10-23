@@ -195,3 +195,9 @@ components:
       - source
       - target_model
       title: OptimizeForVisionRequest
+x-provenance:
+  method: harvested
+  publisher: Pictomancer.ai
+  source: https://api.pictomancer.ai/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
